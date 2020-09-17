@@ -1,0 +1,4 @@
+*.root
+TAGS
+# ignore build directory
+build/
