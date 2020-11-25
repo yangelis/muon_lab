@@ -1,5 +1,5 @@
-#ifndef __ACTIONINITIALIZATION_H_
-#define __ACTIONINITIALIZATION_H_
+#ifndef ACTIONINITIALIZATION_H_
+#define ACTIONINITIALIZATION_H_
 
 #include "DetectorConstruction.hh"
 #include <G4VUserActionInitialization.hh>
@@ -9,16 +9,14 @@
 
 class ActionInitialization : public G4VUserActionInitialization {
 public:
-  ActionInitialization(DetectorConstruction *detConstr);
+  ActionInitialization(DetectorConstruction* detConstr);
   virtual ~ActionInitialization();
 
   virtual void Build() const;
   virtual void BuildForMaster() const;
 
 private:
-  DetectorConstruction *fDetectorConstruction;
+  DetectorConstruction* fDetectorConstruction;
 };
 
-
-
-#endif // __ACTIONINITIALIZATION_H_
+#endif // ACTIONINITIALIZATION_H_

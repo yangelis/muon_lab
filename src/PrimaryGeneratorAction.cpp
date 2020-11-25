@@ -8,7 +8,6 @@
 #include <G4ParticleTable.hh>
 #include <G4SystemOfUnits.hh>
 
-
 PrimaryGeneratorAction::PrimaryGeneratorAction()
     : G4VUserPrimaryGeneratorAction(), fParticleGun(nullptr) {
   G4int nParticles = 1;
@@ -23,11 +22,9 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   fParticleGun->SetParticleEnergy(5. * GeV);
 }
 
-
 PrimaryGeneratorAction::~PrimaryGeneratorAction() { delete fParticleGun; }
 
-
-void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
   // this function is called at the begining of each event
 
   // In order to avoid dependence of PrimaryGeneratorAction
@@ -38,9 +35,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   auto worldLV = G4LogicalVolumeStore::GetInstance()->GetVolume("World");
 
   // Check th world volume shape
-  G4Box *worldBox = nullptr;
+  G4Box* worldBox = nullptr;
   if (worldLV) {
-    worldBox = dynamic_cast<G4Box *>(worldLV->GetSolid());
+    worldBox = dynamic_cast<G4Box*>(worldLV->GetSolid());
   }
 
   if (worldBox) {

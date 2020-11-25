@@ -1,5 +1,5 @@
-#ifndef __EVENTACTION_H_
-#define __EVENTACTION_H_
+#ifndef EVENTACTION_H_
+#define EVENTACTION_H_
 
 #include <G4SystemOfUnits.hh>
 #include <G4THitsMap.hh>
@@ -12,16 +12,16 @@ public:
   EventAction();
   virtual ~EventAction();
 
-  virtual void BeginOfEventAction(const G4Event *event);
-  virtual void EndOfEventAction(const G4Event *event);
+  virtual void BeginOfEventAction(const G4Event* event);
+  virtual void EndOfEventAction(const G4Event* event);
 
 private:
-  G4THitsMap<G4double> *GetHitsCollection(G4int hcID,
-                                          const G4Event *event) const;
-  G4double GetSum(G4THitsMap<G4double> *hitsMap) const;
+  G4THitsMap<G4double>* GetHitsCollection(G4int hcID,
+                                          const G4Event* event) const;
+  G4double GetSum(G4THitsMap<G4double>* hitsMap) const;
   void PrintEventStatistics(G4double absoEdep) const;
 
-  G4int fAbsoEdepHCID;
+  G4int fScintillatorEdepID;
 };
 
-#endif // __EVENTACTION_H_
+#endif // EVENTACTION_H_

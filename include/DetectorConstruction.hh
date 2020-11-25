@@ -1,5 +1,5 @@
-#ifndef __DETECTORCONSTRUCTION_H_
-#define __DETECTORCONSTRUCTION_H_
+#ifndef DETECTORCONSTRUCTION_H_
+#define DETECTORCONSTRUCTION_H_
 
 #include <G4Material.hh>
 #include <G4OpticalSurface.hh>
@@ -15,19 +15,16 @@ public:
   DetectorConstruction();
   virtual ~DetectorConstruction();
 
-  virtual G4VPhysicalVolume *Construct();
+  virtual G4VPhysicalVolume* Construct();
   virtual void ConstructSDandField(); // construct Sensitive Detector
-
 
 private:
   // methods
   void DefineMaterials();
-  G4VPhysicalVolume *DefineVolumes();
+  G4VPhysicalVolume* DefineVolumes();
 
   // data members
   G4bool fCheckOverlaps;
 };
 
-
-
-#endif // __DETECTORCONSTRUCTION_H_
+#endif // DETECTORCONSTRUCTION_H_

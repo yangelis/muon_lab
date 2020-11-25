@@ -16,14 +16,12 @@
 #include <G4VPrimitiveScorer.hh>
 #include <G4VisAttributes.hh>
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 DetectorConstruction::DetectorConstruction()
     : G4VUserDetectorConstruction(), fCheckOverlaps(true) {}
 
 DetectorConstruction::~DetectorConstruction() {}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-G4VPhysicalVolume *DetectorConstruction::Construct() {
+G4VPhysicalVolume* DetectorConstruction::Construct() {
   // Define the materials
   DefineMaterials();
 
@@ -31,7 +29,6 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
   return DefineVolumes();
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void DetectorConstruction::DefineMaterials() {
   auto nistManager = G4NistManager::Instance();
   nistManager->FindOrBuildMaterial("G4_Fe");
@@ -41,7 +38,7 @@ void DetectorConstruction::DefineMaterials() {
   // G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 }
 
-G4VPhysicalVolume *DetectorConstruction::DefineVolumes() {
+G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
 
   // Get materials
   auto defaultMaterial = G4Material::GetMaterial("G4_AIR");
@@ -100,12 +97,13 @@ G4VPhysicalVolume *DetectorConstruction::DefineVolumes() {
   return worldPV;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void DetectorConstruction::ConstructSDandField() {
   G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
+
   auto absDetector = new G4MultiFunctionalDetector("Scintillator");
   G4SDManager::GetSDMpointer()->AddNewDetector(absDetector);
-  G4VPrimitiveScorer *primitive;
+
+  G4VPrimitiveScorer* primitive;
   primitive = new G4PSEnergyDeposit("Edep");
   absDetector->RegisterPrimitive(primitive);
 

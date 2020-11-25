@@ -1,0 +1,14 @@
+---
+Language                            : Cpp
+BasedOnStyle                        : LLVM
+ColumnLimit                         : 80
+SortIncludes                        : true
+IndentWidth                         : 2
+PenaltyBreakComment                 : 30
+AlignTrailingComments               : true
+AllowShortIfStatementsOnASingleLine : Never
+AllowShortLoopsOnASingleLine        : false
+AlwaysBreakTemplateDeclarations     : Yes
+ReflowComments                      : false
+TabWidth                            : 4
+PointerAlignment                    : Left

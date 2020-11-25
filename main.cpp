@@ -26,7 +26,7 @@ void PrintUsage() {
 }
 } // namespace
 
-int main(int argc, char **argv) {
+int main(int argc, char* argv[]) {
   if (argc > 7) {
     PrintUsage();
     return 1;
@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
   }
 
   // Detect interactive mode
-  G4UIExecutive *ui = nullptr;
+  G4UIExecutive* ui = nullptr;
   if (!macro.size()) {
     ui = new G4UIExecutive(argc, argv, session);
   }
@@ -62,9 +62,8 @@ int main(int argc, char **argv) {
 #endif
   // Activate command-based scorer
   G4ScoringManager::GetScoringManager();
-  /*
-   * Mandatory Initialization classes
-   * */
+
+  // Mandatory Initialization classes
 
   // Detector construction
   auto detConstruction = new DetectorConstruction();
@@ -73,10 +72,10 @@ int main(int argc, char **argv) {
   // Physics list
 
   // TODO: trying modular physics list
-  G4VModularPhysicsList *physicsList = new QGSP_BERT;
+  G4VModularPhysicsList* physicsList = new QGSP_BERT;
   physicsList->ReplacePhysics(new G4EmStandardPhysics_option4());
   physicsList->SetVerboseLevel(0);
-  G4OpticalPhysics *opticalPhysics = new G4OpticalPhysics();
+  G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
   opticalPhysics->Configure(kCerenkov, false);
   opticalPhysics->SetCerenkovStackPhotons(true);
   opticalPhysics->Configure(kScintillation, true);
@@ -88,8 +87,8 @@ int main(int argc, char **argv) {
   // User action initialization
   auto actionInit = new ActionInitialization(detConstruction);
   runManager->SetUserInitialization(actionInit);
-
   // runManager->Initialize();
+
   // Initialize visualization
   auto visManager = new G4VisExecutive;
   visManager->Initialize();
