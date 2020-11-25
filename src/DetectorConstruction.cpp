@@ -85,30 +85,65 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
 
   worldLV->SetVisAttributes(G4VisAttributes::GetInvisible());
 
+  // The two same scintillators, top and bottom one
   auto scintillatorSolid =
       new G4Box("scint", scintX / 2, scintY / 2, scintZ / 2);
 
-  auto scintillatorLV =
-      new G4LogicalVolume(scintillatorSolid, scintillatorMaterial, "scintLV");
-  auto scintillatorPV =
-      new G4PVPlacement(0, G4ThreeVector(), scintillatorLV, "scintPV", worldLV,
-                        false, 0, fCheckOverlaps);
+  auto scintillatorLV0 =
+      new G4LogicalVolume(scintillatorSolid, scintillatorMaterial, "scintLV0");
+  new G4PVPlacement(0, G4ThreeVector(), scintillatorLV0, "scintPV0", worldLV,
+                    false, 0, fCheckOverlaps);
 
-  //
+  auto scintillatorLV2 =
+      new G4LogicalVolume(scintillatorSolid, scintillatorMaterial, "scintLV2");
+  new G4PVPlacement(0, G4ThreeVector(0., 0., 70.), scintillatorLV2, "scintPV2",
+                    worldLV, false, 0, fCheckOverlaps);
+
+  auto scintillatorSmallSolid =
+      new G4Box("smallscint", scintX / 2, scintY / 6, scintZ);
+
+  auto scintillatorLV1 = new G4LogicalVolume(scintillatorSmallSolid,
+                                             scintillatorMaterial, "scintLV1");
+  new G4PVPlacement(0, G4ThreeVector(0., 0., 3. * scintZ / 2.), scintillatorLV1,
+                    "scintPV1", worldLV, false, 0, fCheckOverlaps);
+
+  auto red = new G4VisAttributes(G4Colour::Red());
+  red->SetVisibility(true);
+
+  auto yellow = new G4VisAttributes(G4Colour::Yellow());
+  yellow->SetVisibility(true);
+
+  auto cyan = new G4VisAttributes(G4Colour::Cyan());
+  cyan->SetVisibility(true);
+
+  scintillatorLV0->SetVisAttributes(red);
+  scintillatorLV1->SetVisAttributes(yellow);
+  scintillatorLV2->SetVisAttributes(cyan);
+
   // Always return the physical World
-  //
   return worldPV;
 }
 
 void DetectorConstruction::ConstructSDandField() {
   G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
 
-  auto absDetector = new G4MultiFunctionalDetector("Scintillator");
-  G4SDManager::GetSDMpointer()->AddNewDetector(absDetector);
+  auto scint0Detector = new G4MultiFunctionalDetector("Scintillator0");
+  G4SDManager::GetSDMpointer()->AddNewDetector(scint0Detector);
 
   G4VPrimitiveScorer* primitive;
   primitive = new G4PSEnergyDeposit("Edep");
-  absDetector->RegisterPrimitive(primitive);
+  scint0Detector->RegisterPrimitive(primitive);
+  SetSensitiveDetector("scintLV0", scint0Detector);
 
-  SetSensitiveDetector("scintLV", absDetector);
+  auto scint1Detector = new G4MultiFunctionalDetector("Scintillator1");
+  G4SDManager::GetSDMpointer()->AddNewDetector(scint1Detector);
+  primitive = new G4PSEnergyDeposit("Edep");
+  scint1Detector->RegisterPrimitive(primitive);
+  SetSensitiveDetector("scintLV1", scint1Detector);
+
+  auto scint2Detector = new G4MultiFunctionalDetector("Scintillator2");
+  G4SDManager::GetSDMpointer()->AddNewDetector(scint2Detector);
+  primitive = new G4PSEnergyDeposit("Edep");
+  scint2Detector->RegisterPrimitive(primitive);
+  SetSensitiveDetector("scintLV2", scint2Detector);
 }

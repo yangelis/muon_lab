@@ -19,9 +19,11 @@ private:
   G4THitsMap<G4double>* GetHitsCollection(G4int hcID,
                                           const G4Event* event) const;
   G4double GetSum(G4THitsMap<G4double>* hitsMap) const;
-  void PrintEventStatistics(G4double absoEdep) const;
+  void PrintEventStatistics(G4int i, G4double absoEdep) const;
 
-  G4int fScintillatorEdepID;
+  G4int fScintillator0EdepID;
+  G4int fScintillator1EdepID;
+  G4int fScintillator2EdepID;
 };
 
 #endif // EVENTACTION_H_

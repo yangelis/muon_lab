@@ -10,7 +10,9 @@
 #include <G4UnitsTable.hh>
 #include <Randomize.hh>
 
-EventAction::EventAction() : G4UserEventAction(), fScintillatorEdepID(-1) {}
+EventAction::EventAction()
+    : G4UserEventAction(), fScintillator0EdepID(-1), fScintillator1EdepID(-1),
+      fScintillator2EdepID(-1) {}
 
 EventAction::~EventAction() {}
 
@@ -37,33 +39,45 @@ G4double EventAction::GetSum(G4THitsMap<G4double>* hitsMap) const {
   return sumValue;
 }
 
-void EventAction::PrintEventStatistics(G4double absoEdep) const {
+void EventAction::PrintEventStatistics(G4int i, G4double absoEdep) const {
   // Print event statistics
-  G4cout << "   Absorber: total energy: " << std::setw(7)
+  G4cout << "   Scintillator " << i << " : total energy: " << std::setw(7)
          << G4BestUnit(absoEdep, "Energy") << G4endl;
 }
 
 void EventAction::BeginOfEventAction(const G4Event*) {
-  fScintillatorEdepID =
-      G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator/Edep");
+  fScintillator0EdepID =
+      G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator0/Edep");
+  fScintillator1EdepID =
+      G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator1/Edep");
+  fScintillator2EdepID =
+      G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator2/Edep");
 }
 
 void EventAction::EndOfEventAction(const G4Event* event) {
   // Get hist collections IDs
-  if (fScintillatorEdepID < 0) {
-    fScintillatorEdepID =
-        G4SDManager::GetSDMpointer()->GetCollectionID("Absorber/Edep");
+  if (fScintillator1EdepID < 0) {
+    fScintillator0EdepID =
+        G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator0/Edep");
+    fScintillator1EdepID =
+        G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator1/Edep");
+    fScintillator2EdepID =
+        G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator2/Edep");
   }
 
   // Get sum values from hits collections
 
-  auto scintEdep = GetSum(GetHitsCollection(fScintillatorEdepID, event));
+  auto scint0Edep = GetSum(GetHitsCollection(fScintillator0EdepID, event));
+  auto scint1Edep = GetSum(GetHitsCollection(fScintillator1EdepID, event));
+  auto scint2Edep = GetSum(GetHitsCollection(fScintillator2EdepID, event));
 
   // get analysis manager
   auto analysisManager = G4AnalysisManager::Instance();
 
   // // fill histograms
-  analysisManager->FillH1(0, scintEdep);
+  analysisManager->FillH1(0, scint0Edep);
+  analysisManager->FillH1(1, scint1Edep);
+  analysisManager->FillH1(2, scint2Edep);
   // analysisManager->AddNtupleRow(0);
 
   // print per event (modulo n)
@@ -71,6 +85,8 @@ void EventAction::EndOfEventAction(const G4Event* event) {
   auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
   if ((printModulo > 0) && (eventID % printModulo == 0)) {
     G4cout << "---> End of event: " << eventID << G4endl;
-    PrintEventStatistics(scintEdep);
+    PrintEventStatistics(0, scint0Edep);
+    PrintEventStatistics(1, scint1Edep);
+    PrintEventStatistics(2, scint2Edep);
   }
 }
