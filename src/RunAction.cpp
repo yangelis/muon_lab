@@ -8,9 +8,9 @@
 #include <G4SystemOfUnits.hh>
 #include <G4UnitsTable.hh>
 
-RunAction::RunAction(EventAction *eventAction,
-                     DetectorConstruction *detConstruction,
-                     PrimaryGeneratorAction *primaryGenAction)
+RunAction::RunAction(EventAction* eventAction,
+                     DetectorConstruction* detConstruction,
+                     PrimaryGeneratorAction* primaryGenAction)
     : G4UserRunAction(), fEventAction(eventAction),
       fDetConstruction(detConstruction),
       fPrimaryGeneratorAction(primaryGenAction) {
@@ -25,25 +25,24 @@ RunAction::RunAction(EventAction *eventAction,
   analysisManager->SetNtupleMerging(true);
 
   // create histograms
-  analysisManager->CreateH1("Eabs", "Edep in absorber", 100, 0., 5. * GeV);
+  analysisManager->CreateH1("Eabs", "Edep in scintillator", 100, 0., 5. * GeV);
 
   // create ntuples
-  // analysisManager->CreateNtuple("Gaps", "Electron Ntuple");
-  // analysisManager->CreateNtupleDColumn("eDep",
-  // fEventAction->fElectrons.edep); analysisManager->FinishNtuple();
+  // analysisManager->CreateNtuple("Scintillator", "scintillator measurements");
+  // analysisManager->CreateNtupleDColumn("eDep", fEventAction->TODO);
+  // analysisManager->FinishNtuple();
 }
 
 RunAction::~RunAction() { delete G4AnalysisManager::Instance(); }
 
-
-void RunAction::BeginOfRunAction(const G4Run *) {
+void RunAction::BeginOfRunAction(const G4Run*) {
   auto analysisManager = G4AnalysisManager::Instance();
 
   G4String fileName = "output_file";
   analysisManager->OpenFile(fileName);
 }
 
-void RunAction::EndOfRunAction(const G4Run *aRun) {
+void RunAction::EndOfRunAction(const G4Run* aRun) {
   auto analysisManager = G4AnalysisManager::Instance();
   G4int n_run = aRun->GetRunID();
   G4cout << "INFO: run : " << n_run << G4endl;
