@@ -33,6 +33,7 @@ void DetectorConstruction::DefineMaterials() {
   auto nistManager = G4NistManager::Instance();
   nistManager->FindOrBuildMaterial("G4_Fe");
   nistManager->FindOrBuildMaterial("G4_AIR");
+  nistManager->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
 
   // Print materials
   // G4cout << *(G4Material::GetMaterialTable()) << G4endl;
@@ -43,6 +44,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
   // Get materials
   auto defaultMaterial = G4Material::GetMaterial("G4_AIR");
   auto absorberMaterial = G4Material::GetMaterial("G4_Fe");
+  auto scintillatorMaterial =
+      G4Material::GetMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
 
   // Envelope parameters
   G4double env_sizeXY = 20 * cm, env_sizeZ = 50 * cm;
@@ -53,7 +56,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
   G4double scintY = 11 * cm;
   G4double scintZ = 2 * cm;
 
-  if (!defaultMaterial || !absorberMaterial) {
+  if (!defaultMaterial || !absorberMaterial || !scintillatorMaterial) {
     G4ExceptionDescription msg;
     msg << "Cannot retrieve materials already defined.";
     G4Exception("DetectorConstruction::DefineVolumes()", "MyCode0001",
@@ -86,7 +89,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
       new G4Box("scint", scintX / 2, scintY / 2, scintZ / 2);
 
   auto scintillatorLV =
-      new G4LogicalVolume(scintillatorSolid, absorberMaterial, "scintLV");
+      new G4LogicalVolume(scintillatorSolid, scintillatorMaterial, "scintLV");
   auto scintillatorPV =
       new G4PVPlacement(0, G4ThreeVector(), scintillatorLV, "scintPV", worldLV,
                         false, 0, fCheckOverlaps);
