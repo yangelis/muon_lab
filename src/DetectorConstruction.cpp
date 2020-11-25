@@ -99,9 +99,9 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
   new G4PVPlacement(0, G4ThreeVector(0., 0., 70.), scintillatorLV2, "scintPV2",
                     worldLV, false, 0, fCheckOverlaps);
 
+  // scintillator in the middle
   auto scintillatorSmallSolid =
       new G4Box("smallscint", scintX / 2, scintY / 6, scintZ);
-
   auto scintillatorLV1 = new G4LogicalVolume(scintillatorSmallSolid,
                                              scintillatorMaterial, "scintLV1");
   new G4PVPlacement(0, G4ThreeVector(0., 0., 3. * scintZ / 2.), scintillatorLV1,
@@ -109,12 +109,15 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
 
   auto red = new G4VisAttributes(G4Colour::Red());
   red->SetVisibility(true);
+  red->SetForceSolid();
 
   auto yellow = new G4VisAttributes(G4Colour::Yellow());
   yellow->SetVisibility(true);
+  yellow->SetForceSolid();
 
   auto cyan = new G4VisAttributes(G4Colour::Cyan());
   cyan->SetVisibility(true);
+  cyan->SetForceSolid();
 
   scintillatorLV0->SetVisAttributes(red);
   scintillatorLV1->SetVisAttributes(yellow);
