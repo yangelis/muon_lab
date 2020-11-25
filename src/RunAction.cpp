@@ -25,7 +25,7 @@ RunAction::RunAction(EventAction* eventAction,
   analysisManager->SetNtupleMerging(true);
 
   // create histograms
-  analysisManager->CreateH1("Eabs", "Edep in scintillator", 100, 0., 5. * GeV);
+  analysisManager->CreateH1("Eabs", "Edep in scintillator", 100, 0., 10. * MeV);
 
   // create ntuples
   // analysisManager->CreateNtuple("Scintillator", "scintillator measurements");
