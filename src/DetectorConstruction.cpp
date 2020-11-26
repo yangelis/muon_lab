@@ -85,7 +85,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
 
   worldLV->SetVisAttributes(G4VisAttributes::GetInvisible());
 
-  // The two same scintillators, top and bottom one
+  // The two same scintillators, the top and bottom one
   auto scintillatorSolid =
       new G4Box("scint", scintX / 2, scintY / 2, scintZ / 2);
 
@@ -96,7 +96,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
 
   auto scintillatorLV2 =
       new G4LogicalVolume(scintillatorSolid, scintillatorMaterial, "scintLV2");
-  new G4PVPlacement(0, G4ThreeVector(0., 0., 70.), scintillatorLV2, "scintPV2",
+  new G4PVPlacement(0, G4ThreeVector(0., 0., 100.), scintillatorLV2, "scintPV2",
                     worldLV, false, 0, fCheckOverlaps);
 
   // scintillator in the middle
@@ -107,21 +107,31 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
   new G4PVPlacement(0, G4ThreeVector(0., 0., 3. * scintZ / 2.), scintillatorLV1,
                     "scintPV1", worldLV, false, 0, fCheckOverlaps);
 
+  // iron plate where the scint0 is positioned
+  auto absorberSolid =
+      new G4Box("absorber", scintX / 2, scintY / 2, scintZ / 2);
+
+  auto absorberLV =
+      new G4LogicalVolume(absorberSolid, absorberMaterial, "absorbeLV");
+  new G4PVPlacement(0, G4ThreeVector(0., 0., 100 - scintZ), absorberLV,
+                    "absorberPV", worldLV, false, 0, fCheckOverlaps);
+
   auto red = new G4VisAttributes(G4Colour::Red());
-  red->SetVisibility(true);
-  red->SetForceSolid();
-
   auto yellow = new G4VisAttributes(G4Colour::Yellow());
-  yellow->SetVisibility(true);
-  yellow->SetForceSolid();
-
   auto cyan = new G4VisAttributes(G4Colour::Cyan());
-  cyan->SetVisibility(true);
-  cyan->SetForceSolid();
 
-  scintillatorLV0->SetVisAttributes(red);
+  red->SetVisibility(true);
+  yellow->SetVisibility(true);
+  cyan->SetVisibility(true);
+
+  // red->SetForceSolid();
+  // yellow->SetForceSolid();
+  // cyan->SetForceSolid();
+
+  scintillatorLV0->SetVisAttributes(cyan);
   scintillatorLV1->SetVisAttributes(yellow);
   scintillatorLV2->SetVisAttributes(cyan);
+  absorberLV->SetVisAttributes(red);
 
   // Always return the physical World
   return worldPV;

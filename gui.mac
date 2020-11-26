@@ -18,7 +18,7 @@
 /gui/addButton gun "1 GeV"   "/gun/energy 1 GeV"
 /gui/addButton gun "10 GeV"  "/gun/energy 10 GeV"
 /gui/addButton gun "e-"      "/gun/particle e-"
-# /gui/addButton gun "pi0"     "/gun/particle pi0"
+/gui/addButton gun "mu-"      "/gun/particle mu-"
 #
 # Vis menu :
 /gui/addMenu vis Vis

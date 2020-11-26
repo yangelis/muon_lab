@@ -12,3 +12,5 @@ AlwaysBreakTemplateDeclarations     : Yes
 ReflowComments                      : false
 TabWidth                            : 4
 PointerAlignment                    : Left
+AlignOperands                       : true
+AlignTrailingComments               : true
