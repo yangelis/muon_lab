@@ -20,7 +20,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   fParticleGun->SetParticleDefinition(particleDefinition);
   // TODO(#1): Add positional variation to the position of the particle gun
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0., 0., -1.));
-  // TODO: Energy should come from the energy distribution of cosmic ray muons
+  // TODO(#4): Energy should come from the energy distribution of cosmic ray muons
   fParticleGun->SetParticleEnergy(5. * GeV);
 }
 
