@@ -18,7 +18,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   auto particleDefinition =
       G4ParticleTable::GetParticleTable()->FindParticle(particleName = "mu-");
   fParticleGun->SetParticleDefinition(particleDefinition);
-  // TODO: Add positional variation to the position of the particle gun
+  // TODO(#1): Add positional variation to the position of the particle gun
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0., 0., -1.));
   // TODO: Energy should come from the energy distribution of cosmic ray muons
   fParticleGun->SetParticleEnergy(5. * GeV);
