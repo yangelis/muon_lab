@@ -71,7 +71,6 @@ int main(int argc, char* argv[]) {
 
   // Physics list
 
-  // TODO: trying modular physics list
   G4VModularPhysicsList* physicsList = new QGSP_BERT;
   physicsList->ReplacePhysics(new G4EmStandardPhysics_option4());
   physicsList->SetVerboseLevel(0);

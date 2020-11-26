@@ -45,6 +45,7 @@ RunAction::~RunAction() { delete G4AnalysisManager::Instance(); }
 void RunAction::BeginOfRunAction(const G4Run*) {
   auto analysisManager = G4AnalysisManager::Instance();
 
+  // TODO: Add option for different output file name in macros
   G4String fileName = "output_file";
   analysisManager->OpenFile(fileName);
 }
