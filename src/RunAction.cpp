@@ -26,16 +26,18 @@ RunAction::RunAction(EventAction* eventAction,
 
   // create histograms
   analysisManager->CreateH1("Edep0", "Edep in scintillator0", 100, 0.,
-                            10. * MeV);
+                            50. * MeV);
   analysisManager->CreateH1("Edep1", "Edep in scintillator1", 100, 0.,
-                            10. * MeV);
+                            50. * MeV);
   analysisManager->CreateH1("Edep2", "Edep in scintillator2", 100, 0.,
-                            10. * MeV);
+                            50. * MeV);
 
   // create ntuples
-  // analysisManager->CreateNtuple("Scintillator", "scintillator measurements");
-  // analysisManager->CreateNtupleDColumn("eDep", fEventAction->TODO);
-  // analysisManager->FinishNtuple();
+  analysisManager->CreateNtuple("Scintillator", "scintillator measurements");
+  analysisManager->CreateNtupleDColumn("eDep", fEventAction->fParticles.edep);
+  analysisManager->CreateNtupleDColumn("posX", fEventAction->fParticles.posX);
+  analysisManager->CreateNtupleDColumn("posY", fEventAction->fParticles.posY);
+  analysisManager->FinishNtuple();
 }
 
 RunAction::~RunAction() { delete G4AnalysisManager::Instance(); }
