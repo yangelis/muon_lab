@@ -1,4 +1,5 @@
 #include "DetectorConstruction.hh"
+#include "ScintillatorSD.hh"
 
 // G4 includes
 #include <G4Box.hh>
@@ -159,4 +160,10 @@ void DetectorConstruction::ConstructSDandField() {
   primitive = new G4PSEnergyDeposit("Edep");
   scint2Detector->RegisterPrimitive(primitive);
   SetSensitiveDetector("scintLV2", scint2Detector);
+
+
+  ScintillatorSD *scintSD = new ScintillatorSD("scint1");
+  G4SDManager::GetSDMpointer()->AddNewDetector(scintSD);
+  SetSensitiveDetector("scintLV0", scintSD);
+
 }
