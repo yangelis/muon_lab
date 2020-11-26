@@ -1,0 +1,6 @@
+#/run/numberOfWorkers 4
+/run/initialize
+
+#/run/print/Progress 100
+#/gun/energy 5 GeV
+/run/beamOn 100
