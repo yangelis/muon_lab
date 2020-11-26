@@ -30,7 +30,7 @@ G4bool ScintillatorSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   G4Track* theTrack = aStep->GetTrack();
   auto particleName = theTrack->GetParticleDefinition()->GetParticleName();
 
-  // TODO: Save only electrons and their first step
+  // TODO(#3): Save only electrons and their first step
   if (particleName == "e-" && aStep->IsFirstStepInVolume()) {
     G4double edep = aStep->GetTotalEnergyDeposit();
     if (!edep)
