@@ -12,7 +12,7 @@
 
 EventAction::EventAction()
     : G4UserEventAction(), fScintillator0EdepID(-1), fScintillator1EdepID(-1),
-      fScintillator2EdepID(-1) {}
+      fScintillator2EdepID(-1), fScintillatorCollID(-1) {}
 
 EventAction::~EventAction() {}
 
@@ -52,6 +52,10 @@ void EventAction::BeginOfEventAction(const G4Event*) {
       G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator1/Edep");
   fScintillator2EdepID =
       G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator2/Edep");
+
+  fScintillatorCollID =
+      G4SDManager::GetSDMpointer()->GetCollectionID("ScintParticleCollection");
+  fParticles.ClearVecs();
 }
 
 void EventAction::EndOfEventAction(const G4Event* event) {
@@ -63,10 +67,25 @@ void EventAction::EndOfEventAction(const G4Event* event) {
         G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator1/Edep");
     fScintillator2EdepID =
         G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator2/Edep");
+    fScintillatorCollID = G4SDManager::GetSDMpointer()->GetCollectionID(
+        "ScintParticleCollection");
+  }
+
+  ScintillatorHitsCollection* ScintHC = nullptr;
+  if (event->GetHCofThisEvent()) {
+    ScintHC = static_cast<ScintillatorHitsCollection*>(
+        event->GetHCofThisEvent()->GetHC(fScintillatorCollID));
+  }
+
+  // This is were we get the data from the HitCollection
+  if (ScintHC) {
+    // Get number of entries
+    G4cout << "We got a HitCollection with nHits: " << ScintHC->entries()
+           << G4endl;
+    fParticles.Populate(ScintHC);
   }
 
   // Get sum values from hits collections
-
   auto scint0Edep = GetSum(GetHitsCollection(fScintillator0EdepID, event));
   auto scint1Edep = GetSum(GetHitsCollection(fScintillator1EdepID, event));
   auto scint2Edep = GetSum(GetHitsCollection(fScintillator2EdepID, event));
@@ -78,7 +97,7 @@ void EventAction::EndOfEventAction(const G4Event* event) {
   analysisManager->FillH1(0, scint0Edep);
   analysisManager->FillH1(1, scint1Edep);
   analysisManager->FillH1(2, scint2Edep);
-  // analysisManager->AddNtupleRow(0);
+  analysisManager->AddNtupleRow(0);
 
   // print per event (modulo n)
   auto eventID = event->GetEventID();
