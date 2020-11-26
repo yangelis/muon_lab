@@ -8,7 +8,7 @@
 #include <G4UserEventAction.hh>
 #include <globals.hh>
 
-// TODO: Move particles definition so separate file
+// TODO(#5): Move particles struct to separate module
 struct Particles_t {
   std::vector<G4int> scint_id;
   std::vector<G4int> parent_id;
