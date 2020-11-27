@@ -5,6 +5,7 @@
 #include <globals.hh>
 
 class G4ParticleGun;
+class G4GeneralParticleSource;
 class G4Event;
 
 /// The primary generator action class with particle gun.
@@ -17,7 +18,7 @@ public:
   virtual void GeneratePrimaries(G4Event* event);
 
 private:
-  G4ParticleGun* fParticleGun; // pointer a to G4 gun class
+  G4GeneralParticleSource* fParticleGun;
 };
 
 #endif // PRIMARYGENERATORACTION_H_
