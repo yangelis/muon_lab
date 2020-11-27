@@ -5,14 +5,12 @@
 #include <G4GeneralParticleSource.hh>
 #include <G4LogicalVolumeStore.hh>
 #include <G4ParticleDefinition.hh>
-#include <G4ParticleGun.hh>
 #include <G4ParticleTable.hh>
 #include <G4SystemOfUnits.hh>
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
     : G4VUserPrimaryGeneratorAction(), fParticleGun(nullptr) {
   G4int nParticles = 1;
-  // fParticleGun = new G4ParticleGun(nParticles);
   fParticleGun = new G4GeneralParticleSource();
 
   // default particle kinematic
@@ -20,7 +18,6 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   auto particleDefinition =
       G4ParticleTable::GetParticleTable()->FindParticle(particleName = "mu-");
   fParticleGun->SetParticleDefinition(particleDefinition);
-  // TODO(#1): Add positional variation to the position of the particle gun
   fParticleGun->SetNumberOfParticles(nParticles);
   // TODO(#4): Energy should come from the energy distribution of cosmic ray muons
 }
