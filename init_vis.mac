@@ -1,5 +1,6 @@
 # Macro file for the initialization
 # in interactive session
+/control/macroPath /home/john/Documents/projects/Github/muon_lab_simulation/build/macros
 #
 # Set some default verbose
 /control/verbose 0
