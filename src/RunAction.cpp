@@ -34,6 +34,8 @@ RunAction::RunAction(EventAction* eventAction,
 
   // create ntuples
   analysisManager->CreateNtuple("Scintillator", "scintillator measurements");
+  analysisManager->CreateNtupleIColumn("scintID",
+                                       fEventAction->fParticles.scint_id);
   analysisManager->CreateNtupleDColumn("eDep", fEventAction->fParticles.edep);
   analysisManager->CreateNtupleDColumn("posX", fEventAction->fParticles.posX);
   analysisManager->CreateNtupleDColumn("posY", fEventAction->fParticles.posY);

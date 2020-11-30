@@ -161,9 +161,10 @@ void DetectorConstruction::ConstructSDandField() {
   scint2Detector->RegisterPrimitive(primitive);
   SetSensitiveDetector("scintLV2", scint2Detector);
 
-
-  ScintillatorSD *scintSD = new ScintillatorSD("scint1");
+  ScintillatorSD* scintSD = new ScintillatorSD("scintillators");
   G4SDManager::GetSDMpointer()->AddNewDetector(scintSD);
-  SetSensitiveDetector("scintLV0", scintSD);
 
+  SetSensitiveDetector("scintLV0", scintSD);
+  SetSensitiveDetector("scintLV1", scintSD);
+  SetSensitiveDetector("scintLV2", scintSD);
 }
