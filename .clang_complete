@@ -1,0 +1,3 @@
+-std=c++17
+-I./include
+-I/$HOME/Programs/Geant4/geant4.10.06-install/include/Geant4
