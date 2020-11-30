@@ -7,6 +7,8 @@ project(muon_lab VERSION 0.1
   DESCRIPTION "Simulation of a muon lab experiment"
   LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 17)
+
 option(WITH_GEANT4_UIVIS "Build with Geant4 UI and Vis drivers" ON)
 # Find Geant4
 if(WITH_GEANT4_UIVIS)

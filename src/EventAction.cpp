@@ -1,5 +1,7 @@
 #include "EventAction.hh"
 #include "Analysis.hh"
+#define PFT_IMPLEMENTATION
+#include "pft.hpp"
 
 #include <G4Event.hh>
 #include <G4HCofThisEvent.hh>
@@ -82,7 +84,8 @@ void EventAction::EndOfEventAction(const G4Event* event) {
     // Get number of entries
     G4cout << "We got a HitCollection with nHits: " << ScintHC->entries()
            << G4endl;
-    fParticles.Populate(ScintHC);
+    // fParticles.Populate(ScintHC);
+    Populate(fParticles, ScintHC);
   }
 
   // Get sum values from hits collections
@@ -107,5 +110,25 @@ void EventAction::EndOfEventAction(const G4Event* event) {
     PrintEventStatistics(0, scint0Edep);
     PrintEventStatistics(1, scint1Edep);
     PrintEventStatistics(2, scint2Edep);
+  }
+}
+
+void EventAction::Populate(pft::Particles_t& par,
+                           const ScintillatorHitsCollection* ScintHC) {
+  size_t nHits = ScintHC->entries();
+  par.Reserve(nHits);
+  for (size_t i = 0; i < nHits; i++) {
+    par.det_id.push_back(std::atoi((*ScintHC)[i]->GetScintName().c_str()));
+    par.parent_id.push_back((*ScintHC)[i]->GetParentId());
+    par.trid.push_back((*ScintHC)[i]->GetTrId());
+    par.times.push_back((*ScintHC)[i]->GetTime() / ns);
+    par.edep.push_back((*ScintHC)[i]->GetEdep() / MeV);
+    par.energy.push_back((*ScintHC)[i]->GetE() / MeV);
+    par.posX.push_back((*ScintHC)[i]->GetPos().x());
+    par.posY.push_back((*ScintHC)[i]->GetPos().y());
+    par.posZ.push_back((*ScintHC)[i]->GetPos().z());
+    par.theta.push_back((*ScintHC)[i]->GetPos().theta());
+    par.phi.push_back((*ScintHC)[i]->GetPos().phi());
+    par.trlen.push_back((*ScintHC)[i]->GetTrLen());
   }
 }
