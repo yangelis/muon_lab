@@ -21,8 +21,11 @@ RunAction::RunAction(EventAction* eventAction,
   // the analysis method is choosed from myAnalysis.hh
   auto analysisManager = G4AnalysisManager::Instance();
 
-  analysisManager->SetVerboseLevel(0);
-  analysisManager->SetNtupleMerging(true);
+  if (analysisManager->GetType() == "Root") {
+    analysisManager->SetVerboseLevel(0);
+    analysisManager->SetNtupleMerging(true);
+    analysisManager->SetFileName("output_file");
+  }
 
   // create histograms
   analysisManager->CreateH1("Edep0", "Edep in scintillator0", 100, 0.,
@@ -47,9 +50,10 @@ RunAction::~RunAction() { delete G4AnalysisManager::Instance(); }
 void RunAction::BeginOfRunAction(const G4Run*) {
   auto analysisManager = G4AnalysisManager::Instance();
 
-  // TODO(#2): Add option for different output file name in macros
-  G4String fileName = "output_file";
-  analysisManager->OpenFile(fileName);
+  // The default name is given in the constructor
+  // extra naming functionality exist through the
+  // macro /analysis/setFileName filename
+  analysisManager->OpenFile();
 }
 
 void RunAction::EndOfRunAction(const G4Run* aRun) {

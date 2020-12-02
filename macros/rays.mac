@@ -6,5 +6,6 @@
 /gps/pos/shape  Circle
 /gps/pos/radius 5.0 cm
 /gps/energy 5.0 GeV
+/analysis/setFileName muonBeam_5GeV
 
 /run/beamOn 100
