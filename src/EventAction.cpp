@@ -1,6 +1,5 @@
 #include "EventAction.hh"
 #include "Analysis.hh"
-#define PFT_IMPLEMENTATION
 #include "pft.hpp"
 
 #include <G4Event.hh>
