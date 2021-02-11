@@ -12,7 +12,7 @@ ActionInitialization::~ActionInitialization() {}
 
 void ActionInitialization::BuildForMaster() const {
   auto PrimaryGenAction = new PrimaryGeneratorAction();
-  auto event_action = new EventAction();
+  auto event_action     = new EventAction();
 
   SetUserAction(
       new RunAction(event_action, fDetectorConstruction, PrimaryGenAction));

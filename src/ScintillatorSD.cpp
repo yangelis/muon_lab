@@ -35,10 +35,10 @@ G4bool ScintillatorSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     G4double edep = aStep->GetTotalEnergyDeposit();
     if (!edep)
       return false;
-    G4int ParentID = theTrack->GetParentID();
-    G4int TrackID = theTrack->GetTrackID();
+    G4int ParentID       = theTrack->GetParentID();
+    G4int TrackID        = theTrack->GetTrackID();
     G4double TrackLength = theTrack->GetTrackLength();
-    auto newHit = new ScintillatorHit;
+    auto newHit          = new ScintillatorHit;
     newHit->SetScintName(theTrack->GetVolume()->GetName().back());
     newHit->SetParticleName(particleName);
     newHit->SetParentId(ParentID);

@@ -1,5 +1,4 @@
 #include "DetectorConstruction.hh"
-#include "ScintillatorSD.hh"
 
 // G4 includes
 #include <G4Box.hh>
@@ -18,9 +17,28 @@
 #include <G4VisAttributes.hh>
 
 DetectorConstruction::DetectorConstruction()
-    : G4VUserDetectorConstruction(), fCheckOverlaps(true) {}
+    : G4VUserDetectorConstruction(), fCheckOverlaps(true) {
+  fsolidWorld = nullptr;
+  flogicWorld = nullptr;
+  fphysWorld  = nullptr;
 
-DetectorConstruction::~DetectorConstruction() {}
+  fsolidScintillator      = nullptr;
+  flogicScintillator0     = nullptr;
+  fphysScintillator0      = nullptr;
+  flogicScintillator2     = nullptr;
+  fphysScintillator2      = nullptr;
+  fsolidSmallScintillator = nullptr;
+  flogicScintillator1     = nullptr;
+  fphysScintillator1      = nullptr;
+  fsolidAbsorber          = nullptr;
+  flogicAbsorber          = nullptr;
+  fphysAbsorber           = nullptr;
+
+  fDetectorMessenger = new DetectorMessenger(this);
+  fscintX            = 16 * cm;
+}
+
+DetectorConstruction::~DetectorConstruction() { delete fDetectorMessenger; }
 
 G4VPhysicalVolume* DetectorConstruction::Construct() {
   // Define the materials
@@ -43,7 +61,7 @@ void DetectorConstruction::DefineMaterials() {
 G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
 
   // Get materials
-  auto defaultMaterial = G4Material::GetMaterial("G4_AIR");
+  auto defaultMaterial  = G4Material::GetMaterial("G4_AIR");
   auto absorberMaterial = G4Material::GetMaterial("G4_Fe");
   auto scintillatorMaterial =
       G4Material::GetMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
@@ -52,8 +70,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
   G4double env_sizeXY = 20 * cm, env_sizeZ = 50 * cm;
   // World
   G4double worldSizeXY = 1.2 * env_sizeXY;
-  G4double worldSizeZ = 1.2 * env_sizeZ;
-  G4double scintX = 16 * cm;
+  G4double worldSizeZ  = 1.2 * env_sizeZ;
+  // G4double fscintX = 16 * cm;
   G4double scintY = 11 * cm;
   G4double scintZ = 2 * cm;
 
@@ -67,59 +85,61 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
   //
   // World
   //
-  auto worldS =
+  fsolidWorld =
       new G4Box("World",                                           // its name
                 worldSizeXY / 2, worldSizeXY / 2, worldSizeZ / 2); // its size
 
-  auto worldLV = new G4LogicalVolume(worldS,          // its solid
-                                     defaultMaterial, // its material
-                                     "World");        // its name
+  flogicWorld = new G4LogicalVolume(fsolidWorld,     // its solid
+                                    defaultMaterial, // its material
+                                    "World");        // its name
 
-  auto worldPV = new G4PVPlacement(0,               // no rotation
-                                   G4ThreeVector(), // at (0,0,0)
-                                   worldLV,         // its logical volume
-                                   "World",         // its name
-                                   0,               // its mother  volume
-                                   false,           // no boolean operation
-                                   0,               // copy number
-                                   fCheckOverlaps); // checking overlaps
+  fphysWorld = new G4PVPlacement(0,               // no rotation
+                                 G4ThreeVector(), // at (0,0,0)
+                                 flogicWorld,     // its logical volume
+                                 "World",         // its name
+                                 0,               // its mother  volume
+                                 false,           // no boolean operation
+                                 0,               // copy number
+                                 fCheckOverlaps); // checking overlaps
 
-  worldLV->SetVisAttributes(G4VisAttributes::GetInvisible());
+  flogicWorld->SetVisAttributes(G4VisAttributes::GetInvisible());
 
   // The two same scintillators, the top and bottom one
-  auto scintillatorSolid =
-      new G4Box("scint", scintX / 2, scintY / 2, scintZ / 2);
+  fsolidScintillator = new G4Box("scint", fscintX / 2, scintY / 2, scintZ / 2);
 
-  auto scintillatorLV0 =
-      new G4LogicalVolume(scintillatorSolid, scintillatorMaterial, "scintLV0");
-  new G4PVPlacement(0, G4ThreeVector(), scintillatorLV0, "scintPV0", worldLV,
-                    false, 0, fCheckOverlaps);
+  flogicScintillator0 =
+      new G4LogicalVolume(fsolidScintillator, scintillatorMaterial, "scintLV0");
+  fphysScintillator0 =
+      new G4PVPlacement(0, G4ThreeVector(), flogicScintillator0, "scintPV0",
+                        flogicWorld, false, 0, fCheckOverlaps);
 
-  auto scintillatorLV2 =
-      new G4LogicalVolume(scintillatorSolid, scintillatorMaterial, "scintLV2");
-  new G4PVPlacement(0, G4ThreeVector(0., 0., 100.), scintillatorLV2, "scintPV2",
-                    worldLV, false, 0, fCheckOverlaps);
+  flogicScintillator2 =
+      new G4LogicalVolume(fsolidScintillator, scintillatorMaterial, "scintLV2");
+  fphysScintillator2 =
+      new G4PVPlacement(0, G4ThreeVector(0., 0., 100.), flogicScintillator2,
+                        "scintPV2", flogicWorld, false, 0, fCheckOverlaps);
 
   // scintillator in the middle
-  auto scintillatorSmallSolid =
-      new G4Box("smallscint", scintX / 2, scintY / 6, scintZ);
-  auto scintillatorLV1 = new G4LogicalVolume(scintillatorSmallSolid,
-                                             scintillatorMaterial, "scintLV1");
-  new G4PVPlacement(0, G4ThreeVector(0., 0., 3. * scintZ / 2.), scintillatorLV1,
-                    "scintPV1", worldLV, false, 0, fCheckOverlaps);
+  fsolidSmallScintillator =
+      new G4Box("smallscint", fscintX / 2, scintY / 6, scintZ);
+  flogicScintillator1 = new G4LogicalVolume(fsolidSmallScintillator,
+                                            scintillatorMaterial, "scintLV1");
+  fphysScintillator1  = new G4PVPlacement(
+      0, G4ThreeVector(0., 0., 3. * scintZ / 2.), flogicScintillator1,
+      "scintPV1", flogicWorld, false, 0, fCheckOverlaps);
 
   // iron plate where the scint0 is positioned
-  auto absorberSolid =
-      new G4Box("absorber", scintX / 2, scintY / 2, scintZ / 2);
+  fsolidAbsorber = new G4Box("absorber", fscintX / 2, scintY / 2, scintZ / 2);
 
-  auto absorberLV =
-      new G4LogicalVolume(absorberSolid, absorberMaterial, "absorbeLV");
-  new G4PVPlacement(0, G4ThreeVector(0., 0., 100 - scintZ), absorberLV,
-                    "absorberPV", worldLV, false, 0, fCheckOverlaps);
+  flogicAbsorber =
+      new G4LogicalVolume(fsolidAbsorber, absorberMaterial, "absorbeLV");
+  fphysAbsorber =
+      new G4PVPlacement(0, G4ThreeVector(0., 0., 100 - scintZ), flogicAbsorber,
+                        "absorberPV", flogicWorld, false, 0, fCheckOverlaps);
 
-  auto red = new G4VisAttributes(G4Colour::Red());
+  auto red    = new G4VisAttributes(G4Colour::Red());
   auto yellow = new G4VisAttributes(G4Colour::Yellow());
-  auto cyan = new G4VisAttributes(G4Colour::Cyan());
+  auto cyan   = new G4VisAttributes(G4Colour::Cyan());
 
   red->SetVisibility(true);
   yellow->SetVisibility(true);
@@ -129,42 +149,59 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
   // yellow->SetForceSolid();
   // cyan->SetForceSolid();
 
-  scintillatorLV0->SetVisAttributes(cyan);
-  scintillatorLV1->SetVisAttributes(yellow);
-  scintillatorLV2->SetVisAttributes(cyan);
-  absorberLV->SetVisAttributes(red);
+  flogicScintillator0->SetVisAttributes(cyan);
+  flogicScintillator1->SetVisAttributes(yellow);
+  flogicScintillator2->SetVisAttributes(cyan);
+  flogicAbsorber->SetVisAttributes(red);
 
   // Always return the physical World
-  return worldPV;
+  return fphysWorld;
 }
 
 void DetectorConstruction::ConstructSDandField() {
   G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
 
-  auto scint0Detector = new G4MultiFunctionalDetector("Scintillator0");
-  G4SDManager::GetSDMpointer()->AddNewDetector(scint0Detector);
-
   G4VPrimitiveScorer* primitive;
   primitive = new G4PSEnergyDeposit("Edep");
-  scint0Detector->RegisterPrimitive(primitive);
-  SetSensitiveDetector("scintLV0", scint0Detector);
+  if (!fscint0MFDet.Get()) {
+    auto scint0Detector = new G4MultiFunctionalDetector("Scintillator0");
+    scint0Detector->RegisterPrimitive(primitive);
+    fscint0MFDet.Put(scint0Detector);
+  }
+  G4SDManager::GetSDMpointer()->AddNewDetector(fscint0MFDet.Get());
+  SetSensitiveDetector(flogicScintillator0, fscint0MFDet.Get());
 
-  auto scint1Detector = new G4MultiFunctionalDetector("Scintillator1");
-  G4SDManager::GetSDMpointer()->AddNewDetector(scint1Detector);
   primitive = new G4PSEnergyDeposit("Edep");
-  scint1Detector->RegisterPrimitive(primitive);
-  SetSensitiveDetector("scintLV1", scint1Detector);
+  if (!fscint1MFDet.Get()) {
+    auto scint1Detector = new G4MultiFunctionalDetector("Scintillator1");
+    scint1Detector->RegisterPrimitive(primitive);
+    fscint1MFDet.Put(scint1Detector);
+  }
+  G4SDManager::GetSDMpointer()->AddNewDetector(fscint1MFDet.Get());
+  SetSensitiveDetector(flogicScintillator1, fscint1MFDet.Get());
 
-  auto scint2Detector = new G4MultiFunctionalDetector("Scintillator2");
-  G4SDManager::GetSDMpointer()->AddNewDetector(scint2Detector);
   primitive = new G4PSEnergyDeposit("Edep");
-  scint2Detector->RegisterPrimitive(primitive);
-  SetSensitiveDetector("scintLV2", scint2Detector);
+  if (!fscint2MFDet.Get()) {
+    auto scint2Detector = new G4MultiFunctionalDetector("Scintillator2");
+    scint2Detector->RegisterPrimitive(primitive);
+    fscint2MFDet.Put(scint2Detector);
+  }
+  G4SDManager::GetSDMpointer()->AddNewDetector(fscint2MFDet.Get());
+  SetSensitiveDetector(flogicScintillator2, fscint2MFDet.Get());
 
-  ScintillatorSD* scintSD = new ScintillatorSD("scintillators");
-  G4SDManager::GetSDMpointer()->AddNewDetector(scintSD);
+  if (!fscintSD.Get()) {
+    auto scintSD = new ScintillatorSD("scintillators");
+    fscintSD.Put(scintSD);
+  }
+  G4SDManager::GetSDMpointer()->AddNewDetector(fscintSD.Get());
+  SetSensitiveDetector(flogicScintillator0, fscintSD.Get());
 
-  SetSensitiveDetector("scintLV0", scintSD);
-  SetSensitiveDetector("scintLV1", scintSD);
-  SetSensitiveDetector("scintLV2", scintSD);
+  // SetSensitiveDetector("scintLV1", scintSD);
+  // SetSensitiveDetector("scintLV2", scintSD);
+}
+
+void DetectorConstruction::SetWidth0X(G4double myWidhtX) {
+  fscintX = myWidhtX;
+  G4RunManager::GetRunManager()->DefineWorldVolume(Construct());
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
 }

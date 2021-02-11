@@ -95,14 +95,14 @@ void EventAction::EndOfEventAction(const G4Event* event) {
   // get analysis manager
   auto analysisManager = G4AnalysisManager::Instance();
 
-  // // fill histograms
+  // fill histograms
   analysisManager->FillH1(0, scint0Edep);
   analysisManager->FillH1(1, scint1Edep);
   analysisManager->FillH1(2, scint2Edep);
   analysisManager->AddNtupleRow(0);
 
   // print per event (modulo n)
-  auto eventID = event->GetEventID();
+  auto eventID     = event->GetEventID();
   auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
   if ((printModulo > 0) && (eventID % printModulo == 0)) {
     G4cout << "---> End of event: " << eventID << G4endl;

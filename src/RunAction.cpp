@@ -58,7 +58,7 @@ void RunAction::BeginOfRunAction(const G4Run*) {
 
 void RunAction::EndOfRunAction(const G4Run* aRun) {
   auto analysisManager = G4AnalysisManager::Instance();
-  G4int n_run = aRun->GetRunID();
+  G4int n_run          = aRun->GetRunID();
   G4cout << "INFO: run : " << n_run << G4endl;
 
   // save and close the file

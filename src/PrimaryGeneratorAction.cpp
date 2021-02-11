@@ -11,7 +11,7 @@
 PrimaryGeneratorAction::PrimaryGeneratorAction()
     : G4VUserPrimaryGeneratorAction(), fParticleGun(nullptr) {
   G4int nParticles = 1;
-  fParticleGun = new G4GeneralParticleSource();
+  fParticleGun     = new G4GeneralParticleSource();
 
   // default particle kinematic
   G4String particleName;

@@ -20,26 +20,26 @@ ScintillatorHit::ScintillatorHit()
 ScintillatorHit::~ScintillatorHit() {}
 
 ScintillatorHit::ScintillatorHit(const ScintillatorHit& rhs) : G4VHit() {
-  fEdep = rhs.fEdep;
-  fPos = rhs.fPos;
-  fTime = rhs.fTime;
-  fParentID = rhs.fParentID;
-  fTrID = rhs.fTrID;
-  fTrLen = rhs.fTrLen;
+  fEdep      = rhs.fEdep;
+  fPos       = rhs.fPos;
+  fTime      = rhs.fTime;
+  fParentID  = rhs.fParentID;
+  fTrID      = rhs.fTrID;
+  fTrLen     = rhs.fTrLen;
   fLocalTime = rhs.fLocalTime;
-  fParName = rhs.fParName;
+  fParName   = rhs.fParName;
   fScintName = rhs.fScintName;
 }
 
 const ScintillatorHit& ScintillatorHit::operator=(const ScintillatorHit& rhs) {
-  fEdep = rhs.fEdep;
-  fPos = rhs.fPos;
-  fTime = rhs.fTime;
-  fParentID = rhs.fParentID;
-  fTrID = rhs.fTrID;
-  fTrLen = rhs.fTrLen;
+  fEdep      = rhs.fEdep;
+  fPos       = rhs.fPos;
+  fTime      = rhs.fTime;
+  fParentID  = rhs.fParentID;
+  fTrID      = rhs.fTrID;
+  fTrLen     = rhs.fTrLen;
   fLocalTime = rhs.fLocalTime;
-  fParName = rhs.fParName;
+  fParName   = rhs.fParName;
   fScintName = rhs.fScintName;
   return *this;
 }
