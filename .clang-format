@@ -1,16 +1,27 @@
----
-Language                            : Cpp
 BasedOnStyle                        : LLVM
+Language                            : Cpp
 ColumnLimit                         : 80
 SortIncludes                        : true
 IndentWidth                         : 2
 PenaltyBreakComment                 : 30
 AlignTrailingComments               : true
+AlignConsecutiveAssignments         : true
 AllowShortIfStatementsOnASingleLine : Never
 AllowShortLoopsOnASingleLine        : false
-AlwaysBreakTemplateDeclarations     : Yes
+AlwaysBreakTemplateDeclarations     : true
 ReflowComments                      : false
 TabWidth                            : 4
 PointerAlignment                    : Left
-AlignOperands                       : true
-AlignTrailingComments               : true
+BreakBeforeBraces                   : Custom
+BraceWrapping:
+  AfterClass            : false
+  AfterControlStatement : false
+  AfterEnum             : false
+  AfterFunction         : true
+  AfterNamespace        : false
+  AfterObjCDeclaration  : false
+  AfterStruct           : false
+  AfterUnion            : false
+  BeforeCatch           : false
+  BeforeElse            : false
+  IndentBraces          : false

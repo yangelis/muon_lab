@@ -8,6 +8,8 @@ project(muon_lab VERSION 0.1
   LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -mtune=native \
+ -Wall -Wextra -Wpedantic -Wshadow -Wcast-align -fPIC -ggdb -O0")
 
 option(WITH_GEANT4_UIVIS "Build with Geant4 UI and Vis drivers" ON)
 # Find Geant4
