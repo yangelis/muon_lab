@@ -7,11 +7,13 @@
 #include <G4ParticleDefinition.hh>
 #include <G4ParticleTable.hh>
 #include <G4SystemOfUnits.hh>
+#include <G4ios.hh>
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
-    : G4VUserPrimaryGeneratorAction(), fParticleGun(nullptr) {
+    : G4VUserPrimaryGeneratorAction(), fParticleGun(nullptr)
+{
   G4int nParticles = 1;
-  fParticleGun = new G4GeneralParticleSource();
+  fParticleGun     = new G4GeneralParticleSource();
 
   // default particle kinematic
   G4String particleName;
@@ -24,15 +26,16 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction() { delete fParticleGun; }
 
-void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
+{
   // this function is called at the begining of each event
 
   // In order to avoid dependence of PrimaryGeneratorAction
   // on DetectorConstruction class we get Envelope volume
   // from G4LogicalVolumeStore.
 
-  G4double worldZHalfLenght = 0.;
-  auto worldLV = G4LogicalVolumeStore::GetInstance()->GetVolume("World");
+  G4double worldZHalfLenght = 0.0;
+  auto* worldLV = G4LogicalVolumeStore::GetInstance()->GetVolume("World");
 
   // Check th world volume shape
   G4Box* worldBox = nullptr;
@@ -51,8 +54,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
                 JustWarning, msg);
   }
 
+
   // set gun's position
-  fParticleGun->SetParticlePosition(G4ThreeVector(0., 0., worldZHalfLenght));
+  fParticleGun->SetParticlePosition(G4ThreeVector(0., 0., -worldZHalfLenght));
 
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }

@@ -34,7 +34,7 @@ public:
   inline void SetE(G4double en) { fEnergy = en; }
   inline G4double GetE() { return fEnergy; }
 
-  inline void SetPos(G4ThreeVector vec3) { fPos = vec3; }
+  inline void SetPos(const G4ThreeVector& vec3) { fPos = vec3; }
   inline G4ThreeVector GetPos() { return fPos; }
 
   inline void SetTime(G4double ti) { fTime = ti; }
@@ -43,8 +43,8 @@ public:
   inline void SetParentId(G4int parentID) { fParentID = parentID; }
   inline G4int GetParentId() { return fParentID; }
 
-  inline void SetTrId(G4double tid) { fTrID = tid; }
-  inline G4double GetTrId() { return fTrID; }
+  inline void SetTrId(G4int tid) { fTrID = tid; }
+  inline G4int GetTrId() { return fTrID; }
 
   inline void SetTrLen(G4double tl) { fTrLen = tl; }
   inline G4double GetTrLen() { return fTrLen; }
@@ -52,10 +52,10 @@ public:
   inline void SetLocalTime(G4double ti) { fLocalTime = ti; }
   inline G4double GetLocalTime() { return fLocalTime; }
 
-  inline void SetParticleName(G4String par_name) { fParName = par_name; }
+  inline void SetParticleName(G4String&& par_name) { fParName = par_name; }
   inline G4String GetParticleName() { return fParName; }
 
-  inline void SetScintName(G4String scint_name) { fScintName = scint_name; }
+  inline void SetScintName(G4String&& scint_name) { fScintName = scint_name; }
   inline G4String GetScintName() { return fScintName; }
 
 private:
@@ -77,13 +77,15 @@ using ScintillatorHitsCollection = G4THitsCollection<ScintillatorHit>;
 
 extern G4ThreadLocal G4Allocator<ScintillatorHit>* ScintillatorHitAllocator;
 
-inline void* ScintillatorHit::operator new(size_t) {
+inline void* ScintillatorHit::operator new(size_t)
+{
   if (!ScintillatorHitAllocator)
     ScintillatorHitAllocator = new G4Allocator<ScintillatorHit>;
   return (void*)ScintillatorHitAllocator->MallocSingle();
 }
 
-inline void ScintillatorHit::operator delete(void* aHit) {
+inline void ScintillatorHit::operator delete(void* aHit)
+{
   ScintillatorHitAllocator->FreeSingle((ScintillatorHit*)aHit);
 }
 

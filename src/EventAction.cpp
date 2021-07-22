@@ -13,12 +13,15 @@
 
 EventAction::EventAction()
     : G4UserEventAction(), fScintillator0EdepID(-1), fScintillator1EdepID(-1),
-      fScintillator2EdepID(-1), fScintillatorCollID(-1) {}
+      fScintillator2EdepID(-1), fScintillatorCollID(-1)
+{
+}
 
 EventAction::~EventAction() {}
 
-G4THitsMap<G4double>*
-EventAction::GetHitsCollection(G4int hcID, const G4Event* event) const {
+G4THitsMap<G4double>* EventAction::GetHitsCollection(G4int hcID,
+                                                     const G4Event* event) const
+{
   auto hitsCollection = static_cast<G4THitsMap<G4double>*>(
       event->GetHCofThisEvent()->GetHC(hcID));
 
@@ -32,7 +35,8 @@ EventAction::GetHitsCollection(G4int hcID, const G4Event* event) const {
   return hitsCollection;
 }
 
-G4double EventAction::GetSum(G4THitsMap<G4double>* hitsMap) const {
+G4double EventAction::GetSum(G4THitsMap<G4double>* hitsMap) const
+{
   G4double sumValue = 0.;
   for (auto it : *hitsMap->GetMap()) {
     sumValue += *(it.second);
@@ -40,13 +44,15 @@ G4double EventAction::GetSum(G4THitsMap<G4double>* hitsMap) const {
   return sumValue;
 }
 
-void EventAction::PrintEventStatistics(G4int i, G4double absoEdep) const {
+void EventAction::PrintEventStatistics(G4int i, G4double absoEdep) const
+{
   // Print event statistics
   G4cout << "   Scintillator " << i << " : total energy: " << std::setw(7)
          << G4BestUnit(absoEdep, "Energy") << G4endl;
 }
 
-void EventAction::BeginOfEventAction(const G4Event*) {
+void EventAction::BeginOfEventAction(const G4Event*)
+{
   fScintillator0EdepID =
       G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator0/Edep");
   fScintillator1EdepID =
@@ -59,7 +65,8 @@ void EventAction::BeginOfEventAction(const G4Event*) {
   fParticles.ClearVecs();
 }
 
-void EventAction::EndOfEventAction(const G4Event* event) {
+void EventAction::EndOfEventAction(const G4Event* event)
+{
   // Get hist collections IDs
   if (fScintillator1EdepID < 0) {
     fScintillator0EdepID =
@@ -102,7 +109,7 @@ void EventAction::EndOfEventAction(const G4Event* event) {
   analysisManager->AddNtupleRow(0);
 
   // print per event (modulo n)
-  auto eventID = event->GetEventID();
+  auto eventID     = event->GetEventID();
   auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
   if ((printModulo > 0) && (eventID % printModulo == 0)) {
     G4cout << "---> End of event: " << eventID << G4endl;
@@ -113,7 +120,8 @@ void EventAction::EndOfEventAction(const G4Event* event) {
 }
 
 void EventAction::Populate(pft::Particles_t& par,
-                           const ScintillatorHitsCollection* ScintHC) {
+                           const ScintillatorHitsCollection* ScintHC)
+{
   size_t nHits = ScintHC->entries();
   par.Reserve(nHits);
   for (size_t i = 0; i < nHits; i++) {

@@ -20,13 +20,15 @@
 #include <Randomize.hh>
 
 namespace {
-void PrintUsage() {
+void PrintUsage()
+{
   G4cerr << " How to use the program: " << G4endl;
   G4cerr << " bm_electron [-m macro] [-u UIsession] " << G4endl;
 }
 } // namespace
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
   if (argc > 7) {
     PrintUsage();
     return 1;
@@ -53,12 +55,12 @@ int main(int argc, char* argv[]) {
 
 #ifdef G4MULTITHREADED
   // in MT Mode the random engine uses the same seeds
-  auto runManager = new G4MTRunManager;
+  auto* runManager = new G4MTRunManager;
 #else
   // Random engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
   G4Random::setTheSeed(100);
-  auto runManager = new G4RunManager;
+  auto* runManager = new G4RunManager;
 #endif
   // Activate command-based scorer
   G4ScoringManager::GetScoringManager();
@@ -66,7 +68,7 @@ int main(int argc, char* argv[]) {
   // Mandatory Initialization classes
 
   // Detector construction
-  auto detConstruction = new DetectorConstruction();
+  auto* detConstruction = new DetectorConstruction();
   runManager->SetUserInitialization(detConstruction);
 
   // Physics list
@@ -74,7 +76,7 @@ int main(int argc, char* argv[]) {
   G4VModularPhysicsList* physicsList = new QGSP_BERT;
   physicsList->ReplacePhysics(new G4EmStandardPhysics_option4());
   physicsList->SetVerboseLevel(0);
-  G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
+  auto* opticalPhysics = new G4OpticalPhysics();
   opticalPhysics->Configure(kCerenkov, false);
   opticalPhysics->SetCerenkovStackPhotons(true);
   opticalPhysics->Configure(kScintillation, true);
@@ -84,16 +86,16 @@ int main(int argc, char* argv[]) {
   runManager->SetUserInitialization(physicsList);
 
   // User action initialization
-  auto actionInit = new ActionInitialization(detConstruction);
+  auto* actionInit = new ActionInitialization(detConstruction);
   runManager->SetUserInitialization(actionInit);
   // runManager->Initialize();
 
   // Initialize visualization
-  auto visManager = new G4VisExecutive;
+  auto* visManager = new G4VisExecutive;
   visManager->Initialize();
 
   // Pointer to User Interface manager
-  auto UImanager = G4UImanager::GetUIpointer();
+  auto* UImanager = G4UImanager::GetUIpointer();
 
   // Process macro or start UI session
 

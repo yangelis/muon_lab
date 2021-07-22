@@ -5,20 +5,23 @@
 
 ActionInitialization::ActionInitialization(
     DetectorConstruction* detectorConstruction)
-    : G4VUserActionInitialization(),
-      fDetectorConstruction(detectorConstruction) {}
+    : G4VUserActionInitialization(), fDetectorConstruction(detectorConstruction)
+{
+}
 
 ActionInitialization::~ActionInitialization() {}
 
-void ActionInitialization::BuildForMaster() const {
+void ActionInitialization::BuildForMaster() const
+{
   auto PrimaryGenAction = new PrimaryGeneratorAction();
-  auto event_action = new EventAction();
+  auto event_action     = new EventAction();
 
   SetUserAction(
       new RunAction(event_action, fDetectorConstruction, PrimaryGenAction));
 }
 
-void ActionInitialization::Build() const {
+void ActionInitialization::Build() const
+{
   auto PrimaryGenAction = new PrimaryGeneratorAction();
   SetUserAction(PrimaryGenAction);
 

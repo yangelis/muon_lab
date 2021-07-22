@@ -7,14 +7,16 @@
 #include <G4VProcess.hh>
 
 ScintillatorSD::ScintillatorSD(G4String name)
-    : G4VSensitiveDetector(name), fScintHitCollection(nullptr) {
+    : G4VSensitiveDetector(std::move(name)), fScintHitCollection(nullptr)
+{
   G4String HCname;
   collectionName.insert(HCname = "ScintParticleCollection");
 }
 
 ScintillatorSD::~ScintillatorSD() {}
 
-void ScintillatorSD::Initialize(G4HCofThisEvent* HCE) {
+void ScintillatorSD::Initialize(G4HCofThisEvent* HCE)
+{
   fScintHitCollection =
       new ScintillatorHitsCollection(SensitiveDetectorName, collectionName[0]);
 
@@ -26,21 +28,23 @@ void ScintillatorSD::Initialize(G4HCofThisEvent* HCE) {
   HCE->AddHitsCollection(HCID, fScintHitCollection);
 }
 
-G4bool ScintillatorSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
+G4bool ScintillatorSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
+{
   G4Track* theTrack = aStep->GetTrack();
   auto particleName = theTrack->GetParticleDefinition()->GetParticleName();
 
   // TODO(#3): Save only electrons and their first step
   if (particleName == "e-" && aStep->IsFirstStepInVolume()) {
     G4double edep = aStep->GetTotalEnergyDeposit();
-    if (!edep)
+    if (edep <= 0.0) {
       return false;
-    G4int ParentID = theTrack->GetParentID();
-    G4int TrackID = theTrack->GetTrackID();
+    }
+    G4int ParentID       = theTrack->GetParentID();
+    G4int TrackID        = theTrack->GetTrackID();
     G4double TrackLength = theTrack->GetTrackLength();
-    auto newHit = new ScintillatorHit;
+    auto newHit          = new ScintillatorHit;
     newHit->SetScintName(theTrack->GetVolume()->GetName().back());
-    newHit->SetParticleName(particleName);
+    newHit->SetParticleName(std::move(particleName));
     newHit->SetParentId(ParentID);
     newHit->SetTrId(TrackID);
     newHit->SetEdep(edep);

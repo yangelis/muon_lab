@@ -13,7 +13,8 @@ RunAction::RunAction(EventAction* eventAction,
                      PrimaryGeneratorAction* primaryGenAction)
     : G4UserRunAction(), fEventAction(eventAction),
       fDetConstruction(detConstruction),
-      fPrimaryGeneratorAction(primaryGenAction) {
+      fPrimaryGeneratorAction(primaryGenAction)
+{
   // print event number after each event
   G4RunManager::GetRunManager()->SetPrintProgress(1);
 
@@ -47,7 +48,8 @@ RunAction::RunAction(EventAction* eventAction,
 
 RunAction::~RunAction() { delete G4AnalysisManager::Instance(); }
 
-void RunAction::BeginOfRunAction(const G4Run*) {
+void RunAction::BeginOfRunAction(const G4Run*)
+{
   auto analysisManager = G4AnalysisManager::Instance();
 
   // The default name is given in the constructor
@@ -56,9 +58,10 @@ void RunAction::BeginOfRunAction(const G4Run*) {
   analysisManager->OpenFile();
 }
 
-void RunAction::EndOfRunAction(const G4Run* aRun) {
+void RunAction::EndOfRunAction(const G4Run* aRun)
+{
   auto analysisManager = G4AnalysisManager::Instance();
-  G4int n_run = aRun->GetRunID();
+  G4int n_run          = aRun->GetRunID();
   G4cout << "INFO: run : " << n_run << G4endl;
 
   // save and close the file
