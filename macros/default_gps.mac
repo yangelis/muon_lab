@@ -1,0 +1,15 @@
+# for more details:
+# https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html
+/gps/particle mu-
+
+#/gps/energy 2. MeV
+/gps/ene/type Gauss
+/gps/ene/mono 1. GeV
+/gps/ene/sigma 50. MeV
+
+/gps/pos/type Plane
+/gps/pos/shape Circle
+/gps/pos/radius 10. cm
+/gps/pos/centre 0. 0. 30. cm 
+
+/gps/ang/type beam1d
