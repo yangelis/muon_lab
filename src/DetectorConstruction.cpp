@@ -195,9 +195,11 @@ void DetectorConstruction::ConstructSDandField() {
   }
   G4SDManager::GetSDMpointer()->AddNewDetector(fscintSD.Get());
   SetSensitiveDetector(flogicScintillator0, fscintSD.Get());
+  G4SDManager::GetSDMpointer()->AddNewDetector(fscintSD.Get());
+  SetSensitiveDetector(flogicScintillator1, fscintSD.Get());
+  G4SDManager::GetSDMpointer()->AddNewDetector(fscintSD.Get());
+  SetSensitiveDetector(flogicScintillator2, fscintSD.Get());
 
-  // SetSensitiveDetector("scintLV1", scintSD);
-  // SetSensitiveDetector("scintLV2", scintSD);
 }
 
 void DetectorConstruction::SetWidth0X(G4double myWidhtX) {
