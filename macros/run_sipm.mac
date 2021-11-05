@@ -1,0 +1,27 @@
+/run/initialize
+/gps/particle mu-
+/gps/direction 0.0 0.0 -1.0
+/gps/pos/centre  0.0 0.0 0.3 m
+/gps/pos/type   Plane
+/gps/pos/shape  Circle
+/gps/pos/radius 5.0 cm
+/gps/energy 10.0 MeV
+/analysis/setFileName sipmruns.root
+
+
+
+#write photon output in file output_photons.bin
+#/sipm/writePhotons true
+#/sipm/filenamePhotons output_photons.bin
+
+#run gossip and write output in file output_gossip.bin
+#/sipm/runGossip true
+#/sipm/filenameGossip output_gossip.bin
+
+#set SiPM parameters and measurement gate
+/sipm/readParaFile input/MPPC_3x3.txt
+/sipm/gate 500
+/sipm/pregate 200
+
+
+/run/beamOn 10

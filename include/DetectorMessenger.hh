@@ -1,8 +1,8 @@
-#ifndef __DETECTORMESSENGER_H_
-#define __DETECTORMESSENGER_H_
+#ifndef DETECTORMESSENGER_H_
+#define DETECTORMESSENGER_H_
 
-#include "G4UImessenger.hh"
-#include "globals.hh"
+#include <G4UImessenger.hh>
+#include <globals.hh>
 
 class DetectorConstruction;
 
@@ -24,4 +24,4 @@ private:
   G4UIcmdWithADouble* fScintillator0WidthX;
 };
 
-#endif // __DETECTORMESSENGER_H_
+#endif // DETECTORMESSENGER_H_

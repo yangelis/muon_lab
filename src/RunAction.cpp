@@ -5,8 +5,12 @@
 
 #include <G4Run.hh>
 #include <G4RunManager.hh>
-#include <G4SystemOfUnits.hh>
+/* #include <G4SystemOfUnits.hh> */
 #include <G4UnitsTable.hh>
+
+// ROOT includes
+#include <TFile.h>
+#include <TTree.h>
 
 RunAction::RunAction(EventAction* eventAction,
                      DetectorConstruction* detConstruction,
@@ -29,11 +33,12 @@ RunAction::RunAction(EventAction* eventAction,
 
   // create histograms
   analysisManager->CreateH1("Edep0", "Edep in scintillator0", 100, 0.,
-                            50. * MeV);
+                            50. * CLHEP::MeV);
   analysisManager->CreateH1("Edep1", "Edep in scintillator1", 100, 0.,
-                            50. * MeV);
+                            50. * CLHEP::MeV);
   analysisManager->CreateH1("Edep2", "Edep in scintillator2", 100, 0.,
-                            50. * MeV);
+                            50. * CLHEP::MeV);
+  analysisManager->CreateH1("Edep3", "Edep in sipm", 100, 0., 50. * CLHEP::MeV);
 
   // create ntuples
   analysisManager->CreateNtuple("Scintillator", "scintillator measurements");
@@ -42,6 +47,14 @@ RunAction::RunAction(EventAction* eventAction,
   analysisManager->CreateNtupleDColumn("eDep", fEventAction->fParticles.edep);
   analysisManager->CreateNtupleDColumn("posX", fEventAction->fParticles.posX);
   analysisManager->CreateNtupleDColumn("posY", fEventAction->fParticles.posY);
+  analysisManager->FinishNtuple();
+
+  // create tree for gossip
+  analysisManager->CreateNtuple("photons", "sipm photons");
+  analysisManager->CreateNtupleDColumn("posX", fEventAction->posX);
+  analysisManager->CreateNtupleDColumn("posY", fEventAction->posY);
+  analysisManager->CreateNtupleDColumn("time", fEventAction->time);
+  analysisManager->CreateNtupleDColumn("wavelength", fEventAction->wavelength);
   analysisManager->FinishNtuple();
 }
 

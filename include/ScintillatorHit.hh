@@ -34,7 +34,7 @@ public:
   inline void SetE(G4double en) { fEnergy = en; }
   inline G4double GetE() { return fEnergy; }
 
-  inline void SetPos(G4ThreeVector vec3) { fPos = vec3; }
+  inline void SetPos(const G4ThreeVector& vec3) { fPos = vec3; }
   inline G4ThreeVector GetPos() { return fPos; }
 
   inline void SetTime(G4double ti) { fTime = ti; }
@@ -52,10 +52,12 @@ public:
   inline void SetLocalTime(G4double ti) { fLocalTime = ti; }
   inline G4double GetLocalTime() { return fLocalTime; }
 
-  inline void SetParticleName(G4String par_name) { fParName = par_name; }
+  inline void SetParticleName(const G4String& par_name) { fParName = par_name; }
   inline G4String GetParticleName() { return fParName; }
 
-  inline void SetScintName(G4String scint_name) { fScintName = scint_name; }
+  inline void SetScintName(const G4String& scint_name) {
+    fScintName = scint_name;
+  }
   inline G4String GetScintName() { return fScintName; }
 
 private:

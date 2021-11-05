@@ -54,5 +54,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
   // set gun's position
   fParticleGun->SetParticlePosition(G4ThreeVector(0., 0., worldZHalfLenght));
 
+  G4cout << fParticleGun->GetParticleDefinition()->GetParticleName() << " ";
+  G4cout << fParticleGun->GetCurrentSource()->GetEneDist()->GetEnergyDisType()
+         << " ";
+  G4cout << fParticleGun->GetCurrentSource()->GetPosDist()->GetPosDisType()
+         << G4endl;
+
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }

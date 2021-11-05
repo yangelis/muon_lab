@@ -116,5 +116,8 @@
 #
 # For file-based drivers, use this to create an empty detector view:
 /vis/viewer/flush
-#/vis/filtering/trajectories/create/particleFilter
-#/vis/filtering/trajectories/particleFilter-0/add e-
+/vis/ogl/set/displayListLimit 10000
+/vis/filtering/trajectories/create/particleFilter
+/vis/filtering/trajectories/particleFilter-0/add e-
+#/vis/filtering/trajectories/particleFilter-0/add gamma
+#/vis/filtering/trajectories/particleFilter-0/invert true

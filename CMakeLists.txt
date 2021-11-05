@@ -9,6 +9,9 @@ project(muon_lab VERSION 0.1
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wshadow \
+-Wcast-align -fPIC -march=native -O0 -ggdb")
+
 option(WITH_GEANT4_UIVIS "Build with Geant4 UI and Vis drivers" ON)
 # Find Geant4
 if(WITH_GEANT4_UIVIS)
@@ -19,6 +22,14 @@ endif()
 
 include(${Geant4_USE_FILE}) # Auto configure includes/flags
 include_directories(${PROJECT_SOURCE_DIR}/include) # Add -I type paths
+
+find_package(ROOT 6 REQUIRED)
+include(${ROOT_USE_FILE})
+include_directories(${ROOT_INCLUDE_DIRS})
+
+find_package(gossip REQUIRED)
+include_directories(${gossip_INCLUDE_DIRS})
+
 
 # We presume the existence of three directories
 file(GLOB_RECURSE sources ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -50,6 +61,6 @@ endforeach()
 # Compile application
 add_executable(muon_lab main.cpp ${sources} ${headers})
 # Link it to Geant4
-target_link_libraries(muon_lab ${Geant4_LIBRARIES})
+target_link_libraries(muon_lab ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} ${gossip_LIBRARIES})
 
 install(TARGETS muon_lab DESTINATION bin)

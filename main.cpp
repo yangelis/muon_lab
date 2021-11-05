@@ -19,6 +19,8 @@
 
 #include <Randomize.hh>
 
+#include <TROOT.h>
+
 namespace {
 void PrintUsage() {
   G4cerr << " How to use the program: " << G4endl;
@@ -31,6 +33,7 @@ int main(int argc, char* argv[]) {
     PrintUsage();
     return 1;
   }
+  ROOT::EnableImplicitMT(2);
 
   G4String macro;
   G4String session;

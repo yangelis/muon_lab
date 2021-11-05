@@ -6,14 +6,17 @@
 #include <G4HCofThisEvent.hh>
 #include <G4RunManager.hh>
 #include <G4SDManager.hh>
-#include <G4SystemOfUnits.hh>
 #include <G4THitsCollection.hh>
 #include <G4UnitsTable.hh>
 #include <Randomize.hh>
 
+// ROOT includes
+#include <TTree.h>
+
 EventAction::EventAction()
     : G4UserEventAction(), fScintillator0EdepID(-1), fScintillator1EdepID(-1),
-      fScintillator2EdepID(-1), fScintillatorCollID(-1) {}
+      fScintillator2EdepID(-1), fSipmEdepID(-1), fScintillatorCollID(-1),
+      fSiPMCollID(-1) {}
 
 EventAction::~EventAction() {}
 
@@ -40,6 +43,13 @@ G4double EventAction::GetSum(G4THitsMap<G4double>* hitsMap) const {
   return sumValue;
 }
 
+void EventAction::PrintEventStatistics(const G4String& detName,
+                                       G4double absoEdep) const {
+  // Print event statistics
+  G4cout << detName << " : total energy: " << std::setw(7)
+         << G4BestUnit(absoEdep, "Energy") << G4endl;
+}
+
 void EventAction::PrintEventStatistics(G4int i, G4double absoEdep) const {
   // Print event statistics
   G4cout << "   Scintillator " << i << " : total energy: " << std::setw(7)
@@ -53,10 +63,18 @@ void EventAction::BeginOfEventAction(const G4Event*) {
       G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator1/Edep");
   fScintillator2EdepID =
       G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator2/Edep");
+  fSipmEdepID = G4SDManager::GetSDMpointer()->GetCollectionID("sipm/Edep");
 
   fScintillatorCollID =
       G4SDManager::GetSDMpointer()->GetCollectionID("ScintParticleCollection");
   fParticles.ClearVecs();
+
+  fSiPMCollID =
+      G4SDManager::GetSDMpointer()->GetCollectionID("SiPMParticleCollection");
+  posX.clear();
+  posY.clear();
+  time.clear();
+  wavelength.clear();
 }
 
 void EventAction::EndOfEventAction(const G4Event* event) {
@@ -68,14 +86,21 @@ void EventAction::EndOfEventAction(const G4Event* event) {
         G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator1/Edep");
     fScintillator2EdepID =
         G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator2/Edep");
+    fSipmEdepID = G4SDManager::GetSDMpointer()->GetCollectionID("sipm/Edep");
+
     fScintillatorCollID = G4SDManager::GetSDMpointer()->GetCollectionID(
         "ScintParticleCollection");
+    fSiPMCollID =
+        G4SDManager::GetSDMpointer()->GetCollectionID("SiPMParticleCollection");
   }
 
   ScintillatorHitsCollection* ScintHC = nullptr;
+  SiPMHitsCollection* SipmHC          = nullptr;
   if (event->GetHCofThisEvent()) {
     ScintHC = static_cast<ScintillatorHitsCollection*>(
         event->GetHCofThisEvent()->GetHC(fScintillatorCollID));
+    SipmHC = static_cast<SiPMHitsCollection*>(
+        event->GetHCofThisEvent()->GetHC(fSiPMCollID));
   }
 
   // This is were we get the data from the HitCollection
@@ -87,10 +112,18 @@ void EventAction::EndOfEventAction(const G4Event* event) {
     Populate(fParticles, ScintHC);
   }
 
+  if (SipmHC) {
+    // Get number of entries
+    G4cout << "We got a Sipm HitCollection with nHits: " << SipmHC->entries()
+           << G4endl;
+    PopulatePhotons(SipmHC);
+  }
+
   // Get sum values from hits collections
   auto scint0Edep = GetSum(GetHitsCollection(fScintillator0EdepID, event));
   auto scint1Edep = GetSum(GetHitsCollection(fScintillator1EdepID, event));
   auto scint2Edep = GetSum(GetHitsCollection(fScintillator2EdepID, event));
+  auto sipmEdep   = GetSum(GetHitsCollection(fSipmEdepID, event));
 
   // get analysis manager
   auto analysisManager = G4AnalysisManager::Instance();
@@ -99,16 +132,23 @@ void EventAction::EndOfEventAction(const G4Event* event) {
   analysisManager->FillH1(0, scint0Edep);
   analysisManager->FillH1(1, scint1Edep);
   analysisManager->FillH1(2, scint2Edep);
+  analysisManager->FillH1(3, sipmEdep);
   analysisManager->AddNtupleRow(0);
+  analysisManager->AddNtupleRow(1);
 
   // print per event (modulo n)
-  auto eventID     = event->GetEventID();
+  feventID         = event->GetEventID();
   auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
-  if ((printModulo > 0) && (eventID % printModulo == 0)) {
-    G4cout << "---> End of event: " << eventID << G4endl;
-    PrintEventStatistics(0, scint0Edep);
-    PrintEventStatistics(1, scint1Edep);
-    PrintEventStatistics(2, scint2Edep);
+  if ((printModulo > 0) && (feventID % printModulo == 0)) {
+    G4cout << "---> End of event: " << feventID << G4endl;
+    /* PrintEventStatistics(0, scint0Edep); */
+    /* PrintEventStatistics(1, scint1Edep); */
+    /* PrintEventStatistics(2, scint2Edep); */
+    /* PrintEventStatistics(3, sipmEdep); */
+    PrintEventStatistics("Scintillator0", scint0Edep);
+    PrintEventStatistics("Scintillator1", scint1Edep);
+    PrintEventStatistics("Scintillator2", scint2Edep);
+    PrintEventStatistics("SiPM         ", sipmEdep);
   }
 }
 
@@ -120,14 +160,33 @@ void EventAction::Populate(pft::Particles_t& par,
     par.det_id.push_back(std::atoi((*ScintHC)[i]->GetScintName().c_str()));
     par.parent_id.push_back((*ScintHC)[i]->GetParentId());
     par.trid.push_back((*ScintHC)[i]->GetTrId());
-    par.times.push_back((*ScintHC)[i]->GetTime() / ns);
-    par.edep.push_back((*ScintHC)[i]->GetEdep() / MeV);
-    par.energy.push_back((*ScintHC)[i]->GetE() / MeV);
+    par.times.push_back((*ScintHC)[i]->GetTime() / CLHEP::ns);
+    par.edep.push_back((*ScintHC)[i]->GetEdep() / CLHEP::MeV);
+    par.energy.push_back((*ScintHC)[i]->GetE() / CLHEP::MeV);
     par.posX.push_back((*ScintHC)[i]->GetPos().x());
     par.posY.push_back((*ScintHC)[i]->GetPos().y());
     par.posZ.push_back((*ScintHC)[i]->GetPos().z());
     par.theta.push_back((*ScintHC)[i]->GetPos().theta());
     par.phi.push_back((*ScintHC)[i]->GetPos().phi());
     par.trlen.push_back((*ScintHC)[i]->GetTrLen());
+  }
+}
+
+void EventAction::PopulatePhotons(const SiPMHitsCollection* SipmHC) {
+
+  const std::size_t nHits = SipmHC->entries();
+  nPhotonHits             = static_cast<int>(nHits);
+
+  posX.reserve(nHits);
+  posY.reserve(nHits);
+  time.reserve(nHits);
+  wavelength.reserve(nHits);
+
+  for (std::size_t i = 0; i < nHits; i++) {
+    posX.push_back((*SipmHC)[i]->GetPos().x());
+    posY.push_back((*SipmHC)[i]->GetPos().y());
+    time.push_back((*SipmHC)[i]->GetTime() / CLHEP::ns);
+    /* wavelength.push_back((*SipmHC)[i]->GetWavelength()); */
+    wavelength.push_back((*SipmHC)[i]->GetWavelength() / CLHEP::MeV);
   }
 }

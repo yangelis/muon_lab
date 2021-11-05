@@ -9,6 +9,8 @@
 #include <globals.hh>
 
 class G4Run;
+class TTree;
+class TFile;
 
 // Run action class
 class RunAction : public G4UserRunAction {
@@ -24,6 +26,9 @@ private:
   EventAction* fEventAction;
   DetectorConstruction* fDetConstruction;
   PrimaryGeneratorAction* fPrimaryGeneratorAction;
+
+  TFile* photon_file;
+  TTree* tree_photons;
 };
 
 #endif // RUNACTION_H_
