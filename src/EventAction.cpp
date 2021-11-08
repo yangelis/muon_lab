@@ -141,10 +141,6 @@ void EventAction::EndOfEventAction(const G4Event* event) {
   auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
   if ((printModulo > 0) && (feventID % printModulo == 0)) {
     G4cout << "---> End of event: " << feventID << G4endl;
-    /* PrintEventStatistics(0, scint0Edep); */
-    /* PrintEventStatistics(1, scint1Edep); */
-    /* PrintEventStatistics(2, scint2Edep); */
-    /* PrintEventStatistics(3, sipmEdep); */
     PrintEventStatistics("Scintillator0", scint0Edep);
     PrintEventStatistics("Scintillator1", scint1Edep);
     PrintEventStatistics("Scintillator2", scint2Edep);
@@ -179,14 +175,15 @@ void EventAction::PopulatePhotons(const SiPMHitsCollection* SipmHC) {
 
   posX.reserve(nHits);
   posY.reserve(nHits);
+  posZ.reserve(nHits);
   time.reserve(nHits);
   wavelength.reserve(nHits);
 
   for (std::size_t i = 0; i < nHits; i++) {
     posX.push_back((*SipmHC)[i]->GetPos().x());
     posY.push_back((*SipmHC)[i]->GetPos().y());
+    posZ.push_back((*SipmHC)[i]->GetPos().z());
     time.push_back((*SipmHC)[i]->GetTime() / CLHEP::ns);
-    /* wavelength.push_back((*SipmHC)[i]->GetWavelength()); */
-    wavelength.push_back((*SipmHC)[i]->GetWavelength() / CLHEP::MeV);
+    wavelength.push_back((*SipmHC)[i]->GetWavelength());
   }
 }

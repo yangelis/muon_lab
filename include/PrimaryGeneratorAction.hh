@@ -2,9 +2,10 @@
 #define PRIMARYGENERATORACTION_H_
 
 #include <G4VUserPrimaryGeneratorAction.hh>
-#include <globals.hh>
+/* #include <globals.hh> */
 
-class G4GeneralParticleSource;
+class G4ParticleGun;
+/* class G4GeneralParticleSource; */
 class G4Event;
 
 /// The primary generator action class with particle gun.
@@ -17,7 +18,8 @@ public:
   virtual void GeneratePrimaries(G4Event* event);
 
 private:
-  G4GeneralParticleSource* fParticleGun;
+  /* G4GeneralParticleSource* fParticleGun; */
+  G4ParticleGun* fParticleGun; 
 };
 
 #endif // PRIMARYGENERATORACTION_H_

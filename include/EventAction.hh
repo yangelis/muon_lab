@@ -5,10 +5,8 @@
 #include "SiPMHit.hh"
 #include "pft.hpp"
 
-/* #include <G4SystemOfUnits.hh> */
 #include <G4THitsMap.hh>
 #include <G4UserEventAction.hh>
-/* #include <globals.hh> */
 
 class TTree;
 
@@ -23,10 +21,13 @@ public:
 
   pft::Particles_t fParticles;
 
-  std::vector<double> posX;       ///photon x position on sipm
-  std::vector<double> posY;       ///photon y position on sipm
-  std::vector<double> time;       ///photon arrival time on sipm
-  std::vector<double> wavelength; ///photon wavelength
+  std::vector<double> posX;       // photon x position on sipm
+  std::vector<double> posY;       // photon y position on sipm
+  std::vector<double> posZ;       // photon y position on sipm
+  std::vector<double> time;       // photon arrival time on sipm
+  std::vector<double> wavelength; // photon wavelength
+  std::vector<double> timesteps;  // waveform timesteps
+  std::vector<double> amplitude;  // waveform amplitudes
 
   int nPhotonHits; ///number of photons on the sipm
 

@@ -33,7 +33,6 @@ int main(int argc, char* argv[]) {
     PrintUsage();
     return 1;
   }
-  ROOT::EnableImplicitMT(2);
 
   G4String macro;
   G4String session;
@@ -56,6 +55,7 @@ int main(int argc, char* argv[]) {
 
 #ifdef G4MULTITHREADED
   // in MT Mode the random engine uses the same seeds
+  ROOT::EnableImplicitMT(2);
   auto runManager = new G4MTRunManager;
 #else
   // Random engine

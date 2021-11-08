@@ -1,9 +1,8 @@
 #include "SiPMSD.hh"
 
-#include <G4PhysicalConstants.hh>
+/* #include <G4PhysicalConstants.hh> */
 #include <G4SDManager.hh>
 #include <G4Step.hh>
-#include <G4SystemOfUnits.hh>
 #include <G4VProcess.hh>
 
 #include <TFile.h>
@@ -17,12 +16,12 @@ SiPMSD::SiPMSD(G4String name, sipmMC* gossip)
 
   n_event = 0;
 
-  sipm->SetSampling(2.0);
-  sipm->SetGate(500);
-  sipm->SetPreGate(500);
+  /* sipm->SetSampling(2.0); */
+  /* sipm->SetGate(500); */
+  /* sipm->SetPreGate(500); */
 
   write_photons = false; ///default - don't write photon information
-  write_gossip  = true;  ///default - don't run gossip
+  write_gossip  = false; ///default - don't run gossip
 
   filename_photons = "output_photons.bin"; ///default path
   filename_gossip  = "output_gossip.bin";  ///default path
@@ -78,7 +77,7 @@ G4bool SiPMSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     const G4ThreeVector pos = aStep->GetPostStepPoint()->GetPosition();
     const G4double time     = aStep->GetPostStepPoint()->GetGlobalTime();
     const G4double wavelength =
-        h_Planck * c_light / aStep->GetTrack()->GetTotalEnergy();
+        CLHEP::h_Planck * CLHEP::c_light / aStep->GetTrack()->GetTotalEnergy();
 
     newHit->SetPos(pos);
     newHit->SetTime(time);
@@ -87,7 +86,8 @@ G4bool SiPMSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     sipmCollection->insert(newHit);
 
     ///write photon to list
-    photons.AddPhoton(pos.x() / mm, pos.y() / mm, time / ns, wavelength / nm);
+    /* photons.AddPhoton(pos.z() / CLHEP::mm, pos.y() / CLHEP::mm, */
+    /*                   time / CLHEP::ns, wavelength / CLHEP::nm); */
 
     return true;
   }
@@ -123,24 +123,33 @@ void SiPMSD::EndOfEvent(G4HCofThisEvent*) {
   ///run gossip and write output data
   if (write_gossip && photons.size() > 0) {
     sipm->Generate(photons); ///generate sipm response from photon list
-    const double charge = sipm->GetCharge();   ///get output signal charge
-    TGraph* waveform    = sipm->GetWaveform(); ///get output waveform
+    double charge    = sipm->GetCharge();   ///get output signal charge
+    TGraph* waveform = sipm->GetWaveform(); ///get output waveform
 
-    const double sampling        = sipm->GetSampling();
-    const unsigned int n_samples = static_cast<unsigned int>(waveform->GetN());
+    /* const double sampling        = sipm->GetSampling(); */
+    /* const unsigned int n_samples = static_cast<unsigned int>(waveform->GetN()); */
 
-    file_gossip.write((char*)&charge, sizeof(double));   ///write output charge
-    file_gossip.write((char*)&sampling, sizeof(double)); ///write sampling
-    file_gossip.write((char*)&n_samples,
-                      sizeof(unsigned int)); ///write number of samples
+    TFile ifile("waveforms.root", "RECREATE");
+    auto wtree = std::make_shared<TTree>("wav", "tree with waveforms");
+    wtree->Branch("charge", &charge, "charge/F");
+    wtree->Branch("waveform", &waveform);
+    wtree->Fill();
 
-    for (int i = 0; i < waveform->GetN(); i++) ///write amplitudes
-    {
-      const double amplitude = waveform->GetY()[i];
-      file_gossip.write((char*)&amplitude, sizeof(double));
-    }
+    wtree->Write();
+    ifile.Close();
 
-    file_gossip.close();
+    /* file_gossip.write((char*)&charge, sizeof(double));   ///write output charge */
+    /* file_gossip.write((char*)&sampling, sizeof(double)); ///write sampling */
+    /* file_gossip.write((char*)&n_samples, */
+    /*                   sizeof(unsigned int)); ///write number of samples */
+
+    /* for (int i = 0; i < waveform->GetN(); i++) ///write amplitudes */
+    /* { */
+    /*   const double amplitude = waveform->GetY()[i]; */
+    /*   file_gossip.write((char*)&amplitude, sizeof(double)); */
+    /* } */
+
+    /* file_gossip.close(); */
   }
 
   n_event++;

@@ -3,10 +3,7 @@
 #include "SiPMHit.hh"
 
 #include <G4VSensitiveDetector.hh>
-/* #include <TF1.h> */
-/* #include <TH1D.h> */
 #include <fstream>
-/* #include <vector> */
 
 // gossip includes
 #include <PhotonList.h>

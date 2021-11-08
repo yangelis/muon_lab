@@ -1,12 +1,17 @@
 /run/initialize
-/gps/particle mu-
-/gps/direction 0.0 0.0 -1.0
-/gps/pos/centre  0.0 0.0 0.3 m
-/gps/pos/type   Plane
-/gps/pos/shape  Circle
-/gps/pos/radius 5.0 cm
-/gps/energy 10.0 MeV
-/analysis/setFileName sipmruns.root
+
+#/gps/verbose 2
+#/gps/particle mu-
+#/gps/direction 0.0 0.0 -1.0
+#/gps/pos/centre 0.0 0.0 0.3 m
+##/gps/pos/type Plane
+##/gps/pos/shape Circle
+##/gps/pos/radius 5.0 cm
+#/gps/pos/type Point
+#/gps/ene/type Mono
+#/gps/ene/mono 10.0 MeV
+#/gps/energy 10.0 MeV
+/analysis/setFileName sipmrun1.root
 
 
 
@@ -20,8 +25,15 @@
 
 #set SiPM parameters and measurement gate
 /sipm/readParaFile input/MPPC_3x3.txt
-/sipm/gate 500
+/sipm/pde 0.99
+/sipm/gain 30
+/sipm/pulseShape 1.0 60.0 1.0
+
+/sipm/gate 10000
 /sipm/pregate 200
+/sipm/signalAmplitude 20.0
+/sipm/noise 0.5
 
 
-/run/beamOn 10
+
+/run/beamOn 1

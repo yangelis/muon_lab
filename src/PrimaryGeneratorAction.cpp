@@ -2,23 +2,26 @@
 
 #include <G4Box.hh>
 #include <G4Exception.hh>
-#include <G4GeneralParticleSource.hh>
+/* #include <G4GeneralParticleSource.hh> */
 #include <G4LogicalVolumeStore.hh>
 #include <G4ParticleDefinition.hh>
+#include <G4ParticleGun.hh>
 #include <G4ParticleTable.hh>
-#include <G4SystemOfUnits.hh>
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
     : G4VUserPrimaryGeneratorAction(), fParticleGun(nullptr) {
-  G4int nParticles = 1;
-  fParticleGun     = new G4GeneralParticleSource();
+  /* fParticleGun     = new G4GeneralParticleSource(); */
+  fParticleGun = new G4ParticleGun(1);
 
   // default particle kinematic
   G4String particleName;
   auto particleDefinition =
       G4ParticleTable::GetParticleTable()->FindParticle(particleName = "mu-");
   fParticleGun->SetParticleDefinition(particleDefinition);
-  fParticleGun->SetNumberOfParticles(nParticles);
+  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0., 0., -1.));
+  fParticleGun->SetParticleEnergy(4. * CLHEP::MeV);
+  /* fParticleGun->SetParticleDefinition(particleDefinition); */
+  /* fParticleGun->SetNumberOfParticles(nParticles); */
   // TODO(#4): Energy should come from the energy distribution of cosmic ray muons
 }
 
@@ -54,11 +57,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
   // set gun's position
   fParticleGun->SetParticlePosition(G4ThreeVector(0., 0., worldZHalfLenght));
 
-  G4cout << fParticleGun->GetParticleDefinition()->GetParticleName() << " ";
-  G4cout << fParticleGun->GetCurrentSource()->GetEneDist()->GetEnergyDisType()
-         << " ";
-  G4cout << fParticleGun->GetCurrentSource()->GetPosDist()->GetPosDisType()
-         << G4endl;
+  /* G4cout << fParticleGun->GetParticleDefinition()->GetParticleName() << " "; */
+  /* G4cout << fParticleGun->GetCurrentSource()->GetEneDist()->GetEnergyDisType() */
+  /*        << " "; */
+  /* G4cout << fParticleGun->GetCurrentSource()->GetPosDist()->GetPosDisType() */
+  /*        << G4endl; */
 
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }

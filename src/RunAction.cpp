@@ -53,8 +53,11 @@ RunAction::RunAction(EventAction* eventAction,
   analysisManager->CreateNtuple("photons", "sipm photons");
   analysisManager->CreateNtupleDColumn("posX", fEventAction->posX);
   analysisManager->CreateNtupleDColumn("posY", fEventAction->posY);
+  analysisManager->CreateNtupleDColumn("posZ", fEventAction->posZ);
   analysisManager->CreateNtupleDColumn("time", fEventAction->time);
   analysisManager->CreateNtupleDColumn("wavelength", fEventAction->wavelength);
+  analysisManager->CreateNtupleDColumn("timesteps", fEventAction->timesteps);
+  analysisManager->CreateNtupleDColumn("amplitude", fEventAction->amplitude);
   analysisManager->FinishNtuple();
 }
 

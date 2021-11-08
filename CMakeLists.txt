@@ -60,7 +60,9 @@ foreach(_script ${BME_SCRIPTS})
 endforeach()
 # Compile application
 add_executable(muon_lab main.cpp ${sources} ${headers})
+add_executable(waveform_generator waveform_generator.cpp)
 # Link it to Geant4
 target_link_libraries(muon_lab ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} ${gossip_LIBRARIES})
+target_link_libraries(waveform_generator ${ROOT_LIBRARIES} ${gossip_LIBRARIES})
 
 install(TARGETS muon_lab DESTINATION bin)
