@@ -15,8 +15,8 @@
 
 EventAction::EventAction()
     : G4UserEventAction(), fScintillator0EdepID(-1), fScintillator1EdepID(-1),
-      fScintillator2EdepID(-1), fSipmEdepID(-1), fScintillatorCollID(-1),
-      fSiPMCollID(-1) {}
+      fScintillator2EdepID(-1), fSipm0EdepID(-1), fSipm2EdepID(-1),
+      fScintillatorCollID(-1), fSiPMCollID(-1) {}
 
 EventAction::~EventAction() {}
 
@@ -63,7 +63,8 @@ void EventAction::BeginOfEventAction(const G4Event*) {
       G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator1/Edep");
   fScintillator2EdepID =
       G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator2/Edep");
-  fSipmEdepID = G4SDManager::GetSDMpointer()->GetCollectionID("sipm/Edep");
+  fSipm0EdepID = G4SDManager::GetSDMpointer()->GetCollectionID("sipm0/Edep");
+  fSipm2EdepID = G4SDManager::GetSDMpointer()->GetCollectionID("sipm2/Edep");
 
   fScintillatorCollID =
       G4SDManager::GetSDMpointer()->GetCollectionID("ScintParticleCollection");
@@ -71,8 +72,11 @@ void EventAction::BeginOfEventAction(const G4Event*) {
 
   fSiPMCollID =
       G4SDManager::GetSDMpointer()->GetCollectionID("SiPMParticleCollection");
+
+  sipmID.clear();
   posX.clear();
   posY.clear();
+  posZ.clear();
   time.clear();
   wavelength.clear();
 }
@@ -86,7 +90,8 @@ void EventAction::EndOfEventAction(const G4Event* event) {
         G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator1/Edep");
     fScintillator2EdepID =
         G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator2/Edep");
-    fSipmEdepID = G4SDManager::GetSDMpointer()->GetCollectionID("sipm/Edep");
+    fSipm0EdepID = G4SDManager::GetSDMpointer()->GetCollectionID("sipm0/Edep");
+    fSipm2EdepID = G4SDManager::GetSDMpointer()->GetCollectionID("sipm1/Edep");
 
     fScintillatorCollID = G4SDManager::GetSDMpointer()->GetCollectionID(
         "ScintParticleCollection");
@@ -123,7 +128,8 @@ void EventAction::EndOfEventAction(const G4Event* event) {
   auto scint0Edep = GetSum(GetHitsCollection(fScintillator0EdepID, event));
   auto scint1Edep = GetSum(GetHitsCollection(fScintillator1EdepID, event));
   auto scint2Edep = GetSum(GetHitsCollection(fScintillator2EdepID, event));
-  auto sipmEdep   = GetSum(GetHitsCollection(fSipmEdepID, event));
+  auto sipm0Edep  = GetSum(GetHitsCollection(fSipm0EdepID, event));
+  auto sipm2Edep  = GetSum(GetHitsCollection(fSipm2EdepID, event));
 
   // get analysis manager
   auto analysisManager = G4AnalysisManager::Instance();
@@ -132,7 +138,8 @@ void EventAction::EndOfEventAction(const G4Event* event) {
   analysisManager->FillH1(0, scint0Edep);
   analysisManager->FillH1(1, scint1Edep);
   analysisManager->FillH1(2, scint2Edep);
-  analysisManager->FillH1(3, sipmEdep);
+  analysisManager->FillH1(3, sipm0Edep);
+  analysisManager->FillH1(4, sipm2Edep);
   analysisManager->AddNtupleRow(0);
   analysisManager->AddNtupleRow(1);
 
@@ -144,7 +151,8 @@ void EventAction::EndOfEventAction(const G4Event* event) {
     PrintEventStatistics("Scintillator0", scint0Edep);
     PrintEventStatistics("Scintillator1", scint1Edep);
     PrintEventStatistics("Scintillator2", scint2Edep);
-    PrintEventStatistics("SiPM         ", sipmEdep);
+    PrintEventStatistics("SiPM0        ", sipm0Edep);
+    PrintEventStatistics("SiPM2        ", sipm2Edep);
   }
 }
 
@@ -173,6 +181,7 @@ void EventAction::PopulatePhotons(const SiPMHitsCollection* SipmHC) {
   const std::size_t nHits = SipmHC->entries();
   nPhotonHits             = static_cast<int>(nHits);
 
+  sipmID.reserve(nHits);
   posX.reserve(nHits);
   posY.reserve(nHits);
   posZ.reserve(nHits);
@@ -180,6 +189,7 @@ void EventAction::PopulatePhotons(const SiPMHitsCollection* SipmHC) {
   wavelength.reserve(nHits);
 
   for (std::size_t i = 0; i < nHits; i++) {
+    sipmID.push_back(std::atoi((*SipmHC)[i]->GetSiPMName().c_str()));
     posX.push_back((*SipmHC)[i]->GetPos().x());
     posY.push_back((*SipmHC)[i]->GetPos().y());
     posZ.push_back((*SipmHC)[i]->GetPos().z());

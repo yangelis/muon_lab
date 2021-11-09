@@ -21,13 +21,12 @@ public:
 
   pft::Particles_t fParticles;
 
+  std::vector<int> sipmID;        // sipm ID
   std::vector<double> posX;       // photon x position on sipm
   std::vector<double> posY;       // photon y position on sipm
   std::vector<double> posZ;       // photon y position on sipm
   std::vector<double> time;       // photon arrival time on sipm
   std::vector<double> wavelength; // photon wavelength
-  std::vector<double> timesteps;  // waveform timesteps
-  std::vector<double> amplitude;  // waveform amplitudes
 
   int nPhotonHits; ///number of photons on the sipm
 
@@ -49,7 +48,8 @@ private:
   G4int fScintillator0EdepID;
   G4int fScintillator1EdepID;
   G4int fScintillator2EdepID;
-  G4int fSipmEdepID;
+  G4int fSipm0EdepID;
+  G4int fSipm2EdepID;
 
   G4int fScintillatorCollID;
   G4int fSiPMCollID;

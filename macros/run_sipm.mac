@@ -24,16 +24,16 @@
 #/sipm/filenameGossip output_gossip.bin
 
 #set SiPM parameters and measurement gate
-/sipm/readParaFile input/MPPC_3x3.txt
-/sipm/pde 0.99
-/sipm/gain 30
-/sipm/pulseShape 1.0 60.0 1.0
+#/sipm/readParaFile input/MPPC_3x3.txt
+#/sipm/pde 0.99
+#/sipm/gain 30
+#/sipm/pulseShape 1.0 60.0 1.0
+#
+#/sipm/gate 10000
+#/sipm/pregate 200
+#/sipm/signalAmplitude 20.0
+#/sipm/noise 0.5
 
-/sipm/gate 10000
-/sipm/pregate 200
-/sipm/signalAmplitude 20.0
-/sipm/noise 0.5
 
 
-
-/run/beamOn 1
+/run/beamOn 10

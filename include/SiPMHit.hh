@@ -36,7 +36,11 @@ public:
   G4double GetTime() { return time; };
   G4double GetWavelength() { return wavelength; };
 
+  inline void SetSiPMName(const G4String& sipm_name) { sipmName = sipm_name; }
+  inline G4String GetSiPMName() { return sipmName; }
+
 private:
+  G4String sipmName;
   G4ThreeVector pos;   ///photon position on sipm
   G4double time;       ///photon arrival time on sipm
   G4double wavelength; ///photon wavelength

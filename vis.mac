@@ -5,7 +5,8 @@
 # Use these open statements to open selected visualization
 #
 # Use this open statement to create an OpenGL view:
-/vis/open OGL 1200x600-0+0
+#/vis/open OGL 1200x600-0+0
+/vis/open OGL 1366x728-0+0
 
 #
 # Use this open statement to create an OpenInventor view:
@@ -118,7 +119,6 @@
 /vis/viewer/flush
 /vis/ogl/set/displayListLimit 10000
 /vis/filtering/trajectories/create/particleFilter
-# /vis/filtering/trajectories/particleFilter-0/add e-
 /vis/filtering/trajectories/particleFilter-0/add gamma
 /vis/filtering/trajectories/particleFilter-0/add opticalphoton
 /vis/filtering/trajectories/particleFilter-0/invert true

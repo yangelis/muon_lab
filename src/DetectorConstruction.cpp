@@ -36,7 +36,9 @@ DetectorConstruction::DetectorConstruction()
   fsolidAbsorber          = nullptr;
   flogicAbsorber          = nullptr;
   fphysAbsorber           = nullptr;
-  sipm                    = nullptr;
+  sipm0                   = nullptr;
+  sipm1                   = nullptr;
+  sipm2                   = nullptr;
 
   fDetectorMessenger = new DetectorMessenger(this);
   fscintX            = 16 * cm;
@@ -71,7 +73,7 @@ void DetectorConstruction::DefineMaterials() {
   LYSO->AddElement(eY, 4 * perCent);
 
   // Optical properties of LYSO
-  const G4int nLYSO1                = 17;
+  constexpr G4int nLYSO1            = 17;
   G4double FAST_Energy_LYSO[nLYSO1] = {
       1.0 * eV,  1.77 * eV, 2.07 * eV, 2.14 * eV, 2.21 * eV, 2.30 * eV,
       2.38 * eV, 2.48 * eV, 2.58 * eV, 2.70 * eV, 2.82 * eV, 2.88 * eV,
@@ -80,7 +82,7 @@ void DetectorConstruction::DefineMaterials() {
                                           0.40, 0.60, 0.80, 1.40, 2.20, 2.20,
                                           2.00, 0.60, 0.00, 0.00, 0.00};
 
-  const G4int nLYSO2                = 2;
+  constexpr G4int nLYSO2            = 2;
   G4double RIND_Energy_LYSO[nLYSO2] = {1.0 * eV, 6.0 * eV};
   G4double RIND_INDEX_LYSO[nLYSO2]  = {1.82, 1.82};
   G4double ABS_Energy_LYSO[nLYSO2]  = {1.0 * eV, 6.0 * eV};
@@ -177,14 +179,15 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
       500. *
       um; ///total sipm thickness (400um coating (fixed in sipm class) + 100um silicon)
 
-  /* sipm = new SiPM(0, G4ThreeVector(0, 0, 0), flogicWorld, false, 0, */
-  sipm =
-      new SiPM(0, G4ThreeVector(fscintX / 2., 0, 100.), flogicWorld, false, 0,
-               false); ///build sipm
-  /* sipm->SetDimensions(sipm_x, sipm_y, sipm_z); */
-  sipm->SetDimensions(sipm_x, scintY, scintZ);
+  sipm2 = new SiPM(0, G4ThreeVector(fscintX / 2., 0, 100.), flogicWorld, false,
+                   0, false, "sipmLV2", "sipmPV2");
+  sipm2->SetDimensions(sipm_x, scintY, scintZ);
   /* sipm->SetTranslation( */
   /*     G4ThreeVector(fscintX / 2., 0, 100.)); ///move sipm to end of scintillator */
+
+  sipm0 = new SiPM(0, G4ThreeVector(fscintX / 2., 0, 0.), flogicWorld, false, 0,
+                   false, "sipmLV0", "sipmPV0");
+  sipm0->SetDimensions(sipm_x, scintY, scintZ);
 
   // iron plate where the scint0 is positioned
   fsolidAbsorber = new G4Box("absorber", fscintX / 2, scintY / 2, scintZ / 2);
@@ -204,7 +207,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
 
   OpSurface->SetSigmaAlpha(1 * deg);
 
-  const G4int nEntries            = 2;
+  constexpr G4int nEntries        = 2;
   G4double PhotonEnergy[nEntries] = {1. * eV, 6. * eV};
 
   G4double RefractiveIndex[nEntries] = {1, 1};
@@ -298,21 +301,31 @@ void DetectorConstruction::ConstructSDandField() {
   SetSensitiveDetector(flogicScintillator2, fscintSD.Get());
 
   if (!fsipmSD.Get()) {
-    auto* gossip = sipm->GetGossip();
-    auto sipmSD  = new SiPMSD("sipmSD", gossip);
+    auto sipmSD = new SiPMSD("sipmSD");
     fsipmSD.Put(sipmSD);
   }
   G4SDManager::GetSDMpointer()->AddNewDetector(fsipmSD.Get());
-  SetSensitiveDetector(sipm->GetLogVol(), fsipmSD.Get());
+  SetSensitiveDetector(sipm2->GetLogVol(), fsipmSD.Get());
+  G4SDManager::GetSDMpointer()->AddNewDetector(fsipmSD.Get());
+  SetSensitiveDetector(sipm0->GetLogVol(), fsipmSD.Get());
+
+  primitive = new G4PSEnergyDeposit("Edep");
+  if (!fsipm2MFDet.Get()) {
+    auto sipmDet = new G4MultiFunctionalDetector("sipm2");
+    sipmDet->RegisterPrimitive(primitive);
+    fsipm2MFDet.Put(sipmDet);
+  }
+  G4SDManager::GetSDMpointer()->AddNewDetector(fsipm2MFDet.Get());
+  SetSensitiveDetector(sipm2->GetLogVol(), fsipm2MFDet.Get());
 
   primitive = new G4PSEnergyDeposit("Edep");
   if (!fsipm0MFDet.Get()) {
-    auto sipmDet = new G4MultiFunctionalDetector("sipm");
+    auto sipmDet = new G4MultiFunctionalDetector("sipm0");
     sipmDet->RegisterPrimitive(primitive);
     fsipm0MFDet.Put(sipmDet);
   }
   G4SDManager::GetSDMpointer()->AddNewDetector(fsipm0MFDet.Get());
-  SetSensitiveDetector(sipm->GetLogVol(), fsipm0MFDet.Get());
+  SetSensitiveDetector(sipm0->GetLogVol(), fsipm0MFDet.Get());
 }
 
 void DetectorConstruction::SetWidth0X(G4double myWidhtX) {

@@ -12,12 +12,12 @@
 
 SiPM::SiPM(G4RotationMatrix* pRot, const G4ThreeVector& tlate,
            G4LogicalVolume* pMother, G4bool pMany, G4int pCopyNo,
-           G4bool pSurfChk = false)
-    : fsipmSD(0) {
+           G4bool pSurfChk = false, const G4String& LVname = "sipm_log",
+           const G4String& PVname = "SiPM")
+    : log_name(LVname), phys_name(PVname), fsipmSD(0) {
   ///initialize
   BuildSi();
   BuildSiO2();
-  GossipSetup();
 
   sipmMessenger = new SiPMMessenger(this);
 
@@ -29,22 +29,10 @@ SiPM::SiPM(G4RotationMatrix* pRot, const G4ThreeVector& tlate,
       0.4 * CLHEP::mm; ///the coating width if hardcoded at the moment...
 
   ///sipm
-  sipm_box = new G4Box("sipm_box", sizeX / 2., sizeY / 2., sizeZ / 2.);
-  sipm_log = new G4LogicalVolume(sipm_box, Si, "sipm_log", 0, 0, 0);
-  /* sipm_phys = new G4PVPlacement(pRot, tlate, "SiPM", sipm_log, pMother, pMany, */
-  /*                               pCopyNo, pSurfChk); */
-  sipm_phys = new G4PVPlacement(pRot, tlate, sipm_log, "SiPM", pMother, pMany,
-                                pCopyNo, pSurfChk);
-
-  /* G4SDManager* SDman = G4SDManager::GetSDMpointer(); */
-
-  /* if (!fsipmSD.Get()) { */
-  /*   auto sipmSD = new SiPMSD("sipmSD", gossip); */
-  /*   fsipmSD.Put(sipmSD); */
-  /* } */
-  /* G4SDManager::GetSDMpointer()->AddNewDetector(fsipmSD.Get()); */
-  /* SetSensitiveDetector(sipm_log,fsipmSD.Get()); */
-  /* sipm_log->SetSensitiveDetector(fsipmSD.Get()); */
+  sipm_box  = new G4Box("sipm_box", sizeX / 2., sizeY / 2., sizeZ / 2.);
+  sipm_log  = new G4LogicalVolume(sipm_box, Si, log_name, 0, 0, 0);
+  sipm_phys = new G4PVPlacement(pRot, tlate, sipm_log, phys_name, pMother,
+                                pMany, pCopyNo, pSurfChk);
 
   ///coating
   G4ThreeVector tlate2 = G4ThreeVector(0, 0, -coatingWidth / 2. + sizeZ / 2.);
@@ -63,7 +51,6 @@ SiPM::~SiPM() {
   delete coating_log;
   delete coating_phys;
   delete sipmMessenger;
-  delete g_spect;
 }
 
 void SiPM::SetTranslation(const G4ThreeVector& translate) {
@@ -115,13 +102,13 @@ void SiPM::BuildSi() {
 
   TGraph* gn = (TGraph*)f.Get("nSi");
   if (gn == 0) {
-    printf("WARNING: No data for nSi found!");
+    G4cerr << "WARNING: No data for nSi found!" << G4endl;
     return;
   }
 
   TGraph* gAbs = (TGraph*)f.Get("AbsSi");
   if (gAbs == 0) {
-    printf("WARNING: No data for AbsSi found!");
+    G4cerr << "WARNING: No data for AbsSi found!" << G4endl;
     return;
   }
 
@@ -163,12 +150,12 @@ void SiPM::BuildSiO2() {
   SiO2 = G4NistManager::Instance()->FindOrBuildMaterial("G4_SILICON_DIOXIDE");
 
   TFile f("input/SiData.root");
-  G4double c = 299792458 * CLHEP::m / CLHEP::s;
-  G4double h = 4.13566733e-15 * CLHEP::eV * CLHEP::s;
+  constexpr G4double c = 299792458 * CLHEP::m / CLHEP::s;
+  constexpr G4double h = 4.13566733e-15 * CLHEP::eV * CLHEP::s;
 
   TGraph* gn = (TGraph*)f.Get("nSiO2");
   if (gn == 0) {
-    printf("WARNING: No data for nSiO2 found!");
+    G4cerr << "WARNING: No data for nSiO2 found!" << G4endl;
     return;
   }
 
@@ -190,12 +177,4 @@ void SiPM::BuildSiO2() {
 
   delete[] PhotonEnergy;
   delete[] RefractiveIndex;
-}
-
-void SiPM::GossipSetup() {
-  gossip = new sipmMC();
-
-  TFile f("input/SpectralSensitivity.root");
-  gossip->SetSpectralSensitivity((TGraph*)f.Get("MPPC_noRef"));
-  f.Close();
 }

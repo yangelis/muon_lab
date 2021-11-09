@@ -2,7 +2,8 @@
 #define SCINTILLATORSD_H_
 
 #include "ScintillatorHit.hh"
-#include <G4VSensitiveDetector.hh> // Template class for SD
+
+#include <G4VSensitiveDetector.hh>
 
 class G4Step;
 class G4HCofThisEvent;

@@ -64,14 +64,17 @@ private:
   // Sensitive Detector
   G4Cache<ScintillatorSD*> fscintSD;
   G4Cache<SiPMSD*> fsipmSD;
+
   G4Cache<G4MultiFunctionalDetector*> fscint0MFDet;
   G4Cache<G4MultiFunctionalDetector*> fscint1MFDet;
   G4Cache<G4MultiFunctionalDetector*> fscint2MFDet;
   G4Cache<G4MultiFunctionalDetector*> fsipm0MFDet;
   /* G4Cache<G4MultiFunctionalDetector*> fsipm1MFDet; */
-  /* G4Cache<G4MultiFunctionalDetector*> fsipm2MFDet; */
+  G4Cache<G4MultiFunctionalDetector*> fsipm2MFDet;
 
-  SiPM* sipm;
+  SiPM* sipm0;
+  SiPM* sipm1;
+  SiPM* sipm2;
 };
 
 #endif // DETECTORCONSTRUCTION_H_
