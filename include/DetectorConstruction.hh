@@ -39,6 +39,8 @@ private:
   G4bool fCheckOverlaps;
   G4double fscintX;
 
+  G4Material* fScintMaterial;
+
   G4Box* fsolidWorld;
   G4LogicalVolume* flogicWorld;
   G4VPhysicalVolume* fphysWorld;

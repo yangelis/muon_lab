@@ -5,6 +5,7 @@
 #include <G4LogicalVolume.hh>
 #include <G4MultiFunctionalDetector.hh>
 #include <G4NistManager.hh>
+#include <G4OpticalPhoton.hh>
 #include <G4PSEnergyDeposit.hh>
 #include <G4PSNofSecondary.hh>
 #include <G4PVPlacement.hh>
@@ -52,8 +53,30 @@ void DetectorConstruction::DefineMaterials() {
   auto nistManager = G4NistManager::Instance();
   nistManager->FindOrBuildMaterial("G4_Fe");
   nistManager->FindOrBuildMaterial("G4_AIR");
-  nistManager->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
+  fScintMaterial =
+      nistManager->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
 
+  constexpr std::size_t N           = 4;
+  std::array<double, N> wls_Energy  = {2.00 * eV, 2.87 * eV, 2.90 * eV,
+                                      3.47 * eV};
+  std::array<double, N> rIndex      = {1.58, 1.58, 1.58, 1.58};
+  std::array<double, N> absorption1 = {2. * cm, 2. * cm, 2. * cm, 2. * cm};
+  std::array<double, N> scintilFast = {0.00, 0.00, 1.00, 1.00};
+
+  auto* fMPTPscint = new G4MaterialPropertiesTable();
+  fMPTPscint->AddProperty("RINDEX", wls_Energy.data(), rIndex.data(), N);
+  fMPTPscint->AddProperty("ABSLENGTH", wls_Energy.data(), absorption1.data(),
+                          N);
+  fMPTPscint->AddProperty("FASTCOMPONENT", wls_Energy.data(),
+                          scintilFast.data(), N);
+  fMPTPscint->AddConstProperty("SCINTILLATIONYIELD", 10. / keV);
+  fMPTPscint->AddConstProperty("RESOLUTIONSCALE", 1.0);
+  fMPTPscint->AddConstProperty("FASTTIMECONSTANT", 10. * ns);
+  fScintMaterial->SetMaterialPropertiesTable(fMPTPscint);
+
+  // Set the Birks Constant for the Polystyrene scintillator
+
+  fScintMaterial->GetIonisation()->SetBirksConstant(0.126 * mm / MeV);
   // Print materials
   // G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 }
@@ -63,8 +86,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
   // Get materials
   auto defaultMaterial  = G4Material::GetMaterial("G4_AIR");
   auto absorberMaterial = G4Material::GetMaterial("G4_Fe");
-  auto scintillatorMaterial =
-      G4Material::GetMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
 
   // Envelope parameters
   G4double env_sizeXY = 20 * cm, env_sizeZ = 50 * cm;
@@ -75,7 +96,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
   G4double scintY = 11 * cm;
   G4double scintZ = 2 * cm;
 
-  if (!defaultMaterial || !absorberMaterial || !scintillatorMaterial) {
+  if (!defaultMaterial || !absorberMaterial || !fScintMaterial) {
     G4ExceptionDescription msg;
     msg << "Cannot retrieve materials already defined.";
     G4Exception("DetectorConstruction::DefineVolumes()", "MyCode0001",
@@ -108,24 +129,24 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes() {
   fsolidScintillator = new G4Box("scint", fscintX / 2, scintY / 2, scintZ / 2);
 
   flogicScintillator0 =
-      new G4LogicalVolume(fsolidScintillator, scintillatorMaterial, "scintLV0");
+      new G4LogicalVolume(fsolidScintillator, fScintMaterial, "scintLV0");
   fphysScintillator0 =
-      new G4PVPlacement(0, G4ThreeVector(), flogicScintillator0, "scintPV0",
-                        flogicWorld, false, 0, fCheckOverlaps);
+      new G4PVPlacement(nullptr, G4ThreeVector(), flogicScintillator0,
+                        "scintPV0", flogicWorld, false, 0, fCheckOverlaps);
 
   flogicScintillator2 =
-      new G4LogicalVolume(fsolidScintillator, scintillatorMaterial, "scintLV2");
-  fphysScintillator2 =
-      new G4PVPlacement(0, G4ThreeVector(0., 0., 100.), flogicScintillator2,
-                        "scintPV2", flogicWorld, false, 0, fCheckOverlaps);
+      new G4LogicalVolume(fsolidScintillator, fScintMaterial, "scintLV2");
+  fphysScintillator2 = new G4PVPlacement(nullptr, G4ThreeVector(0., 0., 100.),
+                                         flogicScintillator2, "scintPV2",
+                                         flogicWorld, false, 0, fCheckOverlaps);
 
   // scintillator in the middle
   fsolidSmallScintillator =
       new G4Box("smallscint", fscintX / 2, scintY / 6, scintZ);
-  flogicScintillator1 = new G4LogicalVolume(fsolidSmallScintillator,
-                                            scintillatorMaterial, "scintLV1");
-  fphysScintillator1  = new G4PVPlacement(
-      0, G4ThreeVector(0., 0., 3. * scintZ / 2.), flogicScintillator1,
+  flogicScintillator1 =
+      new G4LogicalVolume(fsolidSmallScintillator, fScintMaterial, "scintLV1");
+  fphysScintillator1 = new G4PVPlacement(
+      nullptr, G4ThreeVector(0., 0., 3. * scintZ / 2.), flogicScintillator1,
       "scintPV1", flogicWorld, false, 0, fCheckOverlaps);
 
   // iron plate where the scint0 is positioned
