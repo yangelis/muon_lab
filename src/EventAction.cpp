@@ -13,7 +13,9 @@
 
 EventAction::EventAction()
     : G4UserEventAction(), fScintillator0EdepID(-1), fScintillator1EdepID(-1),
-      fScintillator2EdepID(-1), fScintillatorCollID(-1) {}
+      fScintillator2EdepID(-1), fScintillator0nGammaID(-1),
+      fScintillator1nGammaID(-1), fScintillator2nGammaID(-1),
+      fScintillatorCollID(-1) {}
 
 EventAction::~EventAction() {}
 
@@ -40,10 +42,11 @@ G4double EventAction::GetSum(G4THitsMap<G4double>* hitsMap) const {
   return sumValue;
 }
 
-void EventAction::PrintEventStatistics(G4int i, G4double absoEdep) const {
+void EventAction::PrintEventStatistics(G4int i, G4double absoEdep,
+                                       G4double nGamma) const {
   // Print event statistics
   G4cout << "   Scintillator " << i << " : total energy: " << std::setw(7)
-         << G4BestUnit(absoEdep, "Energy") << G4endl;
+         << G4BestUnit(absoEdep, "Energy") << ", nGamma: " << nGamma << G4endl;
 }
 
 void EventAction::BeginOfEventAction(const G4Event*) {
@@ -53,6 +56,13 @@ void EventAction::BeginOfEventAction(const G4Event*) {
       G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator1/Edep");
   fScintillator2EdepID =
       G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator2/Edep");
+
+  fScintillator0nGammaID =
+      G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator0/nGamma");
+  fScintillator1nGammaID =
+      G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator1/nGamma");
+  fScintillator2nGammaID =
+      G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator2/nGamma");
 
   fScintillatorCollID =
       G4SDManager::GetSDMpointer()->GetCollectionID("ScintParticleCollection");
@@ -68,6 +78,14 @@ void EventAction::EndOfEventAction(const G4Event* event) {
         G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator1/Edep");
     fScintillator2EdepID =
         G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator2/Edep");
+
+    fScintillator0nGammaID =
+        G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator0/nGamma");
+    fScintillator1nGammaID =
+        G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator1/nGamma");
+    fScintillator2nGammaID =
+        G4SDManager::GetSDMpointer()->GetCollectionID("Scintillator2/nGamma");
+
     fScintillatorCollID = G4SDManager::GetSDMpointer()->GetCollectionID(
         "ScintParticleCollection");
   }
@@ -92,6 +110,10 @@ void EventAction::EndOfEventAction(const G4Event* event) {
   auto scint1Edep = GetSum(GetHitsCollection(fScintillator1EdepID, event));
   auto scint2Edep = GetSum(GetHitsCollection(fScintillator2EdepID, event));
 
+  auto scint0nGamma = GetSum(GetHitsCollection(fScintillator0nGammaID, event));
+  auto scint1nGamma = GetSum(GetHitsCollection(fScintillator1nGammaID, event));
+  auto scint2nGamma = GetSum(GetHitsCollection(fScintillator2nGammaID, event));
+
   // get analysis manager
   auto analysisManager = G4AnalysisManager::Instance();
 
@@ -100,21 +122,27 @@ void EventAction::EndOfEventAction(const G4Event* event) {
   analysisManager->FillH1(1, scint1Edep);
   analysisManager->FillH1(2, scint2Edep);
   analysisManager->AddNtupleRow(0);
+  analysisManager->FillNtupleDColumn(0, 4, scint0Edep);
+  analysisManager->FillNtupleDColumn(0, 5, scint1Edep);
+  analysisManager->FillNtupleDColumn(0, 6, scint2Edep);
+  analysisManager->FillNtupleIColumn(0, 7, scint0nGamma);
+  analysisManager->FillNtupleIColumn(0, 8, scint1nGamma);
+  analysisManager->FillNtupleIColumn(0, 9, scint2nGamma);
 
   // print per event (modulo n)
   auto eventID     = event->GetEventID();
   auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
   if ((printModulo > 0) && (eventID % printModulo == 0)) {
     G4cout << "---> End of event: " << eventID << G4endl;
-    PrintEventStatistics(0, scint0Edep);
-    PrintEventStatistics(1, scint1Edep);
-    PrintEventStatistics(2, scint2Edep);
+    PrintEventStatistics(0, scint0Edep, scint0nGamma);
+    PrintEventStatistics(1, scint1Edep, scint1nGamma);
+    PrintEventStatistics(2, scint2Edep, scint2nGamma);
   }
 }
 
 void EventAction::Populate(pft::Particles_t& par,
                            const ScintillatorHitsCollection* ScintHC) {
-  size_t nHits = ScintHC->entries();
+  std::size_t nHits = ScintHC->entries();
   par.Reserve(nHits);
   for (size_t i = 0; i < nHits; i++) {
     par.det_id.push_back(std::atoi((*ScintHC)[i]->GetScintName().c_str()));

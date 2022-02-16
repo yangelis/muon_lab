@@ -1,13 +1,7 @@
-/run/numberOfThreads 4
-
-/run/initialize
 /gps/particle mu-
 /gps/direction 0.0 0.0 -1.0
 /gps/pos/centre  0.0 0.0 1.0 m
 /gps/pos/type   Plane
 /gps/pos/shape  Circle
-/gps/pos/radius 2.0 cm
+/gps/pos/radius 5.0 cm
 /gps/energy 5.0 GeV
-/analysis/setFileName muonBeam_5GeV
-
-/run/beamOn 500

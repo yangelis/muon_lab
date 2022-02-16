@@ -24,7 +24,7 @@ private:
   G4THitsMap<G4double>* GetHitsCollection(G4int hcID,
                                           const G4Event* event) const;
   G4double GetSum(G4THitsMap<G4double>* hitsMap) const;
-  void PrintEventStatistics(G4int i, G4double absoEdep) const;
+  void PrintEventStatistics(G4int i, G4double absoEdep, G4double nGamma) const;
 
   void Populate(pft::Particles_t& par,
                 const ScintillatorHitsCollection* ScintHC);
@@ -32,6 +32,11 @@ private:
   G4int fScintillator0EdepID;
   G4int fScintillator1EdepID;
   G4int fScintillator2EdepID;
+
+  G4int fScintillator0nGammaID;
+  G4int fScintillator1nGammaID;
+  G4int fScintillator2nGammaID;
+
   G4int fScintillatorCollID;
 };
 

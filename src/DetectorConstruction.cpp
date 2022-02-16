@@ -167,6 +167,14 @@ void DetectorConstruction::ConstructSDandField() {
     auto scint0Detector = new G4MultiFunctionalDetector("Scintillator0");
     scint0Detector->RegisterPrimitive(primitive);
     fscint0MFDet.Put(scint0Detector);
+
+    primitive         = new G4PSNofSecondary("nGamma");
+    auto* gammaFilter = new G4SDParticleFilter(
+        "gammaFilter",
+        G4OpticalPhoton::OpticalPhotonDefinition()->GetParticleName());
+    primitive->SetFilter(gammaFilter);
+    scint0Detector->RegisterPrimitive(primitive);
+    fscint0MFDet.Put(scint0Detector);
   }
   G4SDManager::GetSDMpointer()->AddNewDetector(fscint0MFDet.Get());
   SetSensitiveDetector(flogicScintillator0, fscint0MFDet.Get());
@@ -176,6 +184,14 @@ void DetectorConstruction::ConstructSDandField() {
     auto scint1Detector = new G4MultiFunctionalDetector("Scintillator1");
     scint1Detector->RegisterPrimitive(primitive);
     fscint1MFDet.Put(scint1Detector);
+
+    primitive         = new G4PSNofSecondary("nGamma");
+    auto* gammaFilter = new G4SDParticleFilter(
+        "gammaFilter",
+        G4OpticalPhoton::OpticalPhotonDefinition()->GetParticleName());
+    primitive->SetFilter(gammaFilter);
+    scint1Detector->RegisterPrimitive(primitive);
+    fscint1MFDet.Put(scint1Detector);
   }
   G4SDManager::GetSDMpointer()->AddNewDetector(fscint1MFDet.Get());
   SetSensitiveDetector(flogicScintillator1, fscint1MFDet.Get());
@@ -183,6 +199,14 @@ void DetectorConstruction::ConstructSDandField() {
   primitive = new G4PSEnergyDeposit("Edep");
   if (!fscint2MFDet.Get()) {
     auto scint2Detector = new G4MultiFunctionalDetector("Scintillator2");
+    scint2Detector->RegisterPrimitive(primitive);
+    fscint2MFDet.Put(scint2Detector);
+
+    primitive         = new G4PSNofSecondary("nGamma");
+    auto* gammaFilter = new G4SDParticleFilter(
+        "gammaFilter",
+        G4OpticalPhoton::OpticalPhotonDefinition()->GetParticleName());
+    primitive->SetFilter(gammaFilter);
     scint2Detector->RegisterPrimitive(primitive);
     fscint2MFDet.Put(scint2Detector);
   }
@@ -195,9 +219,7 @@ void DetectorConstruction::ConstructSDandField() {
   }
   G4SDManager::GetSDMpointer()->AddNewDetector(fscintSD.Get());
   SetSensitiveDetector(flogicScintillator0, fscintSD.Get());
-  G4SDManager::GetSDMpointer()->AddNewDetector(fscintSD.Get());
   SetSensitiveDetector(flogicScintillator1, fscintSD.Get());
-  G4SDManager::GetSDMpointer()->AddNewDetector(fscintSD.Get());
   SetSensitiveDetector(flogicScintillator2, fscintSD.Get());
 
 }

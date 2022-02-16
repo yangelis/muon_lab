@@ -42,6 +42,12 @@ RunAction::RunAction(EventAction* eventAction,
   analysisManager->CreateNtupleDColumn("eDep", fEventAction->fParticles.edep);
   analysisManager->CreateNtupleDColumn("posX", fEventAction->fParticles.posX);
   analysisManager->CreateNtupleDColumn("posY", fEventAction->fParticles.posY);
+  analysisManager->CreateNtupleDColumn("eDep0");
+  analysisManager->CreateNtupleDColumn("eDep1");
+  analysisManager->CreateNtupleDColumn("eDep2");
+  analysisManager->CreateNtupleIColumn("nGamma0");
+  analysisManager->CreateNtupleIColumn("nGamma1");
+  analysisManager->CreateNtupleIColumn("nGamma2");
   analysisManager->FinishNtuple();
 }
 

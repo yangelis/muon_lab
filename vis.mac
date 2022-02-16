@@ -116,5 +116,11 @@
 #
 # For file-based drivers, use this to create an empty detector view:
 /vis/viewer/flush
-#/vis/filtering/trajectories/create/particleFilter
-#/vis/filtering/trajectories/particleFilter-0/add e-
+/vis/filtering/trajectories/create/particleFilter
+/vis/filtering/trajectories/particleFilter-0/add e-
+/vis/filtering/trajectories/particleFilter-0/add e+
+/vis/filtering/trajectories/particleFilter-0/add mu-
+
+
+# setup the gps correctly
+/control/execute macros/gps_setup.mac

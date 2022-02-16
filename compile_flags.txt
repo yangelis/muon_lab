@@ -1,0 +1,9 @@
+-std=c++17
+-Wall
+-Wextra
+-Wpedantic
+-Wshadow
+-I./include
+-m64
+-I$ROOTSYS/include
+-I/$HOME/Programs/Geant4/geant4.10.06-install/include/Geant4
